@@ -4,15 +4,15 @@ A modern, browser-based inventory management solution designed to eliminate the 
 
 ---
 
-## 🎯 Why This Project?
+## Why This Project?
 
 Traditional inventory management apps suffer from fundamental architectural limitations. This project reimagines inventory management from the ground up, solving critical problems that plague multi-user retail environments.
 
 ---
 
-## ✨ Key Advantages Over Traditional Apps
+## Key Advantages Over Traditional Apps
 
-### 1️⃣ **Zero Installation, Maximum Flexibility**
+### 1. Zero Installation, Maximum Flexibility
 
 **The Problem with Traditional Apps:**
 - Requires software installation on each device
@@ -21,16 +21,16 @@ Traditional inventory management apps suffer from fundamental architectural limi
 - Device switching creates friction and downtime
 
 **Our Solution:**
-- ✅ **Runs directly in the browser** - no installation needed
-- ✅ **Access from any device** - desktop, tablet, or mobile
-- ✅ **Consistent experience** across all platforms
-- ✅ **Always up-to-date** - no manual updates required
+- **Runs directly in the browser** - no installation needed
+- **Access from any device** - desktop, tablet, or mobile
+- **Consistent experience** across all platforms
+- **Always up-to-date** - no manual updates required
 
 > **Big Win:** Complete flexibility - manage your inventory from anywhere, on any device, instantly.
 
 ---
 
-### 2️⃣ **Real-Time Multi-User Synchronization**
+### 2. Real-Time Multi-User Synchronization
 
 **The Problem with Traditional Apps:**
 - Data sync delays between devices
@@ -39,16 +39,16 @@ Traditional inventory management apps suffer from fundamental architectural limi
 - Sync conflicts in multi-staff environments
 
 **Our Solution:**
-- ✅ **Single source of truth** - one live system
-- ✅ **Instant updates** - everyone sees changes in real-time
-- ✅ **Zero sync lag** - no waiting for data to propagate
-- ✅ **Conflict-free collaboration** - built for teams
+- **Single source of truth** - one live system
+- **Instant updates** - everyone sees changes in real-time
+- **Zero sync lag** - no waiting for data to propagate
+- **Conflict-free collaboration** - built for teams
 
 > **Big Win:** No more confusion about which data is current - everyone always sees the same information.
 
 ---
 
-### 3️⃣ **Guaranteed Stock Accuracy - No Overselling**
+### 3. Guaranteed Stock Accuracy - No Overselling
 
 **The Problem with Traditional Apps:**
 - Sync timing creates race conditions
@@ -57,16 +57,16 @@ Traditional inventory management apps suffer from fundamental architectural limi
 - Stock counts can become inaccurate
 
 **Our Solution:**
-- ✅ **Atomic stock checks** - sales allowed only if stock exists at that exact moment
-- ✅ **Concurrency control** - simultaneous sales handled safely
-- ✅ **Impossible to oversell** - guaranteed by system architecture
-- ✅ **Always accurate inventory** - no phantom stock
+- **Atomic stock checks** - sales allowed only if stock exists at that exact moment
+- **Concurrency control** - simultaneous sales handled safely
+- **Impossible to oversell** - guaranteed by system architecture
+- **Always accurate inventory** - no phantom stock
 
 > **Big Win:** Stock correctness is mathematically guaranteed, not just "usually right."
 
 ---
 
-### 4️⃣ **Transactional Integrity - All or Nothing**
+### 4. Transactional Integrity - All or Nothing
 
 **The Problem with Traditional Apps:**
 - Billing, stock updates, and records are separate features
@@ -75,19 +75,19 @@ Traditional inventory management apps suffer from fundamental architectural limi
 - Manual reconciliation required
 
 **Our Solution:**
-- ✅ **Single atomic transaction:**
+- **Single atomic transaction:**
   ```
   Sale → Stock Update → Bill Generation → Email
   ```
-- ✅ **Either all happen or none happen** - no partial states
-- ✅ **No mismatched records** - guaranteed consistency
-- ✅ **Zero reconciliation** - system maintains integrity automatically
+- **Either all happen or none happen** - no partial states
+- **No mismatched records** - guaranteed consistency
+- **Zero reconciliation** - system maintains integrity automatically
 
 > **Big Win:** Your books are always accurate - no ghost inventory or missing invoices.
 
 ---
 
-### 5️⃣ **Complete Transparency & Accountability**
+### 5. Complete Transparency & Accountability
 
 **The Problem with Traditional Apps:**
 - Difficult to track who made changes
@@ -96,20 +96,20 @@ Traditional inventory management apps suffer from fundamental architectural limi
 - Accountability gaps in multi-staff shops
 
 **Our Solution:**
-- ✅ **Every action is logged** with user, timestamp, and details
-- ✅ **Complete audit trail:**
+- **Every action is logged** with user, timestamp, and details
+- **Complete audit trail:**
   - Sales transactions
   - Stock adjustments
   - User actions
   - System events
-- ✅ **Full accountability** - know exactly who did what and when
-- ✅ **Easy investigation** - trace any discrepancy to its source
+- **Full accountability** - know exactly who did what and when
+- **Easy investigation** - trace any discrepancy to its source
 
 > **Big Win:** Complete visibility into all operations - perfect for managing teams.
 
 ---
 
-### 6️⃣ **Flexible & Customizable Workflows**
+### 6. Flexible & Customizable Workflows
 
 **The Problem with Traditional Apps:**
 - Fixed, rigid workflows
@@ -118,16 +118,16 @@ Traditional inventory management apps suffer from fundamental architectural limi
 - One-size-fits-all approach
 
 **Our Solution:**
-- ✅ **Core rules-based design** - built around fundamental principles
-- ✅ **Adaptable workflows** - customize to your business needs
-- ✅ **Focused functionality** - correctness over feature bloat
-- ✅ **Clean, controllable system** - you're in charge
+- **Core rules-based design** - built around fundamental principles
+- **Adaptable workflows** - customize to your business needs
+- **Focused functionality** - correctness over feature bloat
+- **Clean, controllable system** - you're in charge
 
 > **Big Win:** The system adapts to your business, not the other way around.
 
 ---
 
-### 7️⃣ **Always Current - Zero Maintenance**
+### 7. Always Current - Zero Maintenance
 
 **The Problem with Traditional Apps:**
 - Manual app updates required
@@ -136,16 +136,16 @@ Traditional inventory management apps suffer from fundamental architectural limi
 - Users on different versions create problems
 
 **Our Solution:**
-- ✅ **Browser-based** = always latest version automatically
-- ✅ **Zero user maintenance** - updates happen seamlessly
-- ✅ **No version conflicts** - everyone uses the same version
-- ✅ **Instant feature rollout** - new capabilities available immediately
+- **Browser-based** = always latest version automatically
+- **Zero user maintenance** - updates happen seamlessly
+- **No version conflicts** - everyone uses the same version
+- **Instant feature rollout** - new capabilities available immediately
 
 > **Big Win:** Your team never worries about updates - the system is always current.
 
 ---
 
-## 🏗️ Architecture Highlights
+## Architecture Highlights
 
 - **Web-based architecture** for universal access
 - **Real-time database synchronization** for instant updates
@@ -155,7 +155,7 @@ Traditional inventory management apps suffer from fundamental architectural limi
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Modern web browser (Chrome, Firefox, Safari, Edge)
@@ -167,7 +167,7 @@ Simply navigate to the application URL in your browser and log in. Your inventor
 
 ---
 
-## 🎯 Perfect For
+## Perfect For
 
 - **Retail shops** with multiple staff members
 - **Warehouses** requiring real-time stock visibility
@@ -177,7 +177,7 @@ Simply navigate to the application URL in your browser and log in. Your inventor
 
 ---
 
-## 🔒 Security & Reliability
+## Security & Reliability
 
 - Secure authentication and authorization
 - Role-based access control
@@ -187,7 +187,7 @@ Simply navigate to the application URL in your browser and log in. Your inventor
 
 ---
 
-## 📊 Core Features
+## Core Features
 
 - **Inventory Management** - Add, update, and track products
 - **Sales Processing** - Quick and accurate transaction handling
@@ -199,25 +199,25 @@ Simply navigate to the application URL in your browser and log in. Your inventor
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please feel free to submit issues or pull requests.
 
 ---
 
-## 📝 License
+## License
 
 [Specify your license here]
 
 ---
 
-## 📧 Support
+## Support
 
 For questions or support, please contact [your contact information]
 
 ---
 
-## 🌟 The Bottom Line
+## The Bottom Line
 
 This isn't just another inventory management system - it's a fundamental rethinking of how inventory should work in a modern, collaborative environment. By eliminating installation requirements, guaranteeing data consistency, and providing real-time visibility, we've created a system that just works - reliably, every time.
 
@@ -225,7 +225,7 @@ This isn't just another inventory management system - it's a fundamental rethink
 
 ---
 
-## 💻 Tech Stack
+## Tech Stack
 
 ### Frontend
 - **Next.js** - Modern React framework for production-grade applications
@@ -241,7 +241,7 @@ This isn't just another inventory management system - it's a fundamental rethink
 
 ---
 
-## 🎨 Design Focus
+## Design Focus
 
 ### Retailer-Centric Approach
 Our design philosophy prioritizes the retailer experience:
@@ -261,7 +261,7 @@ The customer interface is intentionally streamlined:
 
 ---
 
-## 📱 QR Code + OCR Based Flow
+## QR Code + OCR Based Flow
 
 ### Innovative Bill Processing
 Our system combines QR code technology with OCR (Optical Character Recognition) for seamless transactions:
@@ -292,14 +292,14 @@ Users can interact with their bills in two ways:
 - Purchase is verified and completed instantly
 
 ### Benefits
-- ✅ **Paperless option** - Digital bill storage
-- ✅ **Quick verification** - Instant QR code scanning
-- ✅ **Error reduction** - OCR eliminates manual entry
-- ✅ **Flexible workflow** - Multiple input methods
+- **Paperless option** - Digital bill storage
+- **Quick verification** - Instant QR code scanning
+- **Error reduction** - OCR eliminates manual entry
+- **Flexible workflow** - Multiple input methods
 
 ---
 
-## 🔧 Why Next.js?
+## Why Next.js?
 
 We chose Next.js as our primary framework for several strategic reasons:
 
@@ -327,29 +327,29 @@ We chose Next.js as our primary framework for several strategic reasons:
 
 ---
 
-## 📅 Project Information
+## Project Information
 
 **Last Updated:** February 2, 2026  
 **Team:** Team-12
 
 ---
 
-##  Development Update � February 23, 2026
+## Development Update – February 23, 2026
 
 This section documents the frontend authentication redesign and the production-grade backend database architecture implementation completed today.
 
 ---
 
-#  Frontend Authentication Flow Redesign (React + Vite)
+## Frontend Authentication Flow Redesign (React + Vite)
 
-###  Objective
+### Objective
 Redesign the authentication flow to support dual signup pages (User + Admin) while maintaining a single unified login page.
 
 ---
 
-##  Files Modified / Created
+### Files Modified / Created
 
-### 1 src/Pages/Login.jsx (Modified)
+#### 1. src/Pages/Login.jsx (Modified)
 - Added navigation links:
   - **Create User Account**
   - **Create Admin Account**
@@ -358,18 +358,18 @@ Redesign the authentication flow to support dual signup pages (User + Admin) whi
 
 ---
 
-### 2 src/Pages/UserSignup.jsx (New)
+#### 2. src/Pages/UserSignup.jsx (New)
 - Dedicated User Registration page.
 - Fields:
   - Full Name
   - Email Address
   - Password
 - Matches Login page aesthetic and design system.
-- Currently includes mock redirect to /shop.
+- Currently includes mock redirect to `/shop`.
 
 ---
 
-### 3 src/Pages/AdminSignup.jsx (New)
+#### 3. src/Pages/AdminSignup.jsx (New)
 - Dedicated Admin Registration page.
 - Fields:
   - Full Name
@@ -377,101 +377,100 @@ Redesign the authentication flow to support dual signup pages (User + Admin) whi
   - Store Name
   - Password
 - Matches Login page premium UI styling.
-- Currently includes mock redirect to /admin/dashboard.
+- Currently includes mock redirect to `/admin/dashboard`.
 
 ---
 
-### 4 src/App.jsx (Modified)
-- Imported UserSignup and AdminSignup.
+#### 4. src/App.jsx (Modified)
+- Imported `UserSignup` and `AdminSignup`.
 - Registered new routes:
-  - /signup/user
-  - /signup/admin
-- Integrated into main <Routes> tree.
+  - `/signup/user`
+  - `/signup/admin`
+- Integrated into main `<Routes>` tree.
 
 ---
 
-#  Backend Database Architecture (Node.js + Mongoose)
+## Backend Database Architecture (Node.js + Mongoose)
 
-###  Objective
+### Objective
 Design and implement a production-ready, concurrency-safe, transaction-based database layer for the Inventory Management System.
 
 All backend changes scoped within:
 
-\:/CSI/Team-12/server/\
+`a:/CSI/Team-12/server/`
 
 ---
 
-#  Database Models Implemented
+## Database Models Implemented
 
 ---
 
-## 1 server/models/User.js
+### 1. server/models/User.js
 - Strict required field validation.
 - Email:
-  - unique: true
+  - `unique: true`
   - Regex validation
   - Indexed
 - Role enforced using enum:
-  - ['admin', 'user']
+  - `['admin', 'user']`
 - Designed to support dual signup flow securely.
 
 ---
 
-## 2 server/models/Product.js
+### 2. server/models/Product.js
 - Enforced:
-  - price minimum = 0
-  - stock minimum = 0
+  - `price` minimum = 0
+  - `stock` minimum = 0
 - Guaranteed SKU uniqueness via indexing.
-- Default lowStockThreshold configured.
-- Linked createdBy to User ObjectId.
+- Default `lowStockThreshold` configured.
+- Linked `createdBy` to User ObjectId.
 - Prevents negative inventory states at schema level.
 
 ---
 
-## 3 server/models/Sale.js
-- Embedded items array containing:
-  - productId
-  - quantity
-  - priceAtSale (Snapshot Pricing)
+### 3. server/models/Sale.js
+- Embedded `items` array containing:
+  - `productId`
+  - `quantity`
+  - `priceAtSale` (Snapshot Pricing)
 - Snapshot pricing ensures historical report accuracy even if product price changes later.
 - Enforced sale status enum:
-  - pending
-  - completed
-  - cancelled
+  - `pending`
+  - `completed`
+  - `cancelled`
 
 ---
 
-## 4 server/models/Bill.js
+### 4. server/models/Bill.js
 - References Sale via ObjectId.
-- Enforced unique, indexed qrString.
+- Enforced unique, indexed `qrString`.
 - Designed for QR + OCR validation workflow.
 
 ---
 
-## 5 server/models/AuditLog.js
+### 5. server/models/AuditLog.js
 - Captures:
-  - userId
-  - ctionType
-  - collectionName
-  - documentId
-  - previousData
-  - 
-ewData
+  - `userId`
+  - `actionType`
+  - `collectionName`
+  - `documentId`
+  - `previousData`
+  - `newData`
 - Applied compound indexing on:
-  - userId
-  - 	imestamp
+  - `userId`
+  - `timestamp`
 - Designed for high-volume audit querying efficiency.
 
 ---
 
-#  Concurrency & Transaction Services
+## Concurrency & Transaction Services
 
-##  server/services/saleService.js
+### server/services/saleService.js
 
-###  educeStockAtomically()
+#### reduceStockAtomically()
 Implements MongoDB atomic stock reduction using:
 
-\indOneAndUpdate({ stock: { $gte: quantity } })\
+`findOneAndUpdate({ stock: { $gte: quantity } })`
 
 Guarantees:
 - No race-condition overselling
@@ -481,10 +480,10 @@ Guarantees:
 
 ---
 
-###  createSaleTransaction()
+#### createSaleTransaction()
 Wraps entire sale lifecycle inside:
 
-\session.startTransaction()\
+`session.startTransaction()`
 
 Operations included:
 
@@ -495,16 +494,16 @@ Operations included:
 5. Commit transaction
 
 If any step fails:
-- Executes session.abortTransaction()
+- Executes `session.abortTransaction()`
 - Prevents ghost transactions
 - Prevents mismatched stock and financial records
 - Ensures strict ACID-compliant behavior
 
 ---
 
-#  Backend Architecture Documentation
+## Backend Architecture Documentation
 
-##  server/README-backend.md
+### server/README-backend.md
 - Defined scalable folder structure:
   - models/
   - services/
@@ -519,7 +518,7 @@ If any step fails:
 
 ---
 
-#  Summary of Todays Achievements
+## Summary of Today's Achievements
 
 - Implemented dual-role authentication UI.
 - Designed strict database schema architecture.
