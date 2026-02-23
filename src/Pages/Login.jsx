@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import { useState } from "react"
 
 export default function Login() {
@@ -60,6 +60,21 @@ export default function Login() {
           >
             Login
           </button>
+
+          <div className="mt-4 flex flex-col items-center gap-3 text-sm text-[#1C1C1C]/80">
+            <p>
+              New here?{" "}
+              <Link to="/signup/user" className="font-semibold underline hover:text-black">
+                Create User Account
+              </Link>
+            </p>
+            <p>
+              Owning a store?{" "}
+              <Link to="/signup/admin" className="font-semibold underline hover:text-black">
+                Create Admin Account
+              </Link>
+            </p>
+          </div>
 
         </form>
 

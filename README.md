@@ -331,3 +331,199 @@ We chose Next.js as our primary framework for several strategic reasons:
 
 **Last Updated:** February 2, 2026  
 **Team:** Team-12
+
+---
+
+##  Development Update – February 23, 2026
+
+This section documents the frontend authentication redesign and the production-grade backend database architecture implementation completed today.
+
+---
+
+#  Frontend Authentication Flow Redesign (React + Vite)
+
+###  Objective
+Redesign the authentication flow to support dual signup pages (User + Admin) while maintaining a single unified login page.
+
+---
+
+##  Files Modified / Created
+
+### 1 src/Pages/Login.jsx (Modified)
+- Added navigation links:
+  - **Create User Account**
+  - **Create Admin Account**
+- Preserved unified login logic so both roles authenticate from one centralized entry.
+- Maintained premium UI styling (glassmorphism card, soft glow background).
+
+---
+
+### 2 src/Pages/UserSignup.jsx (New)
+- Dedicated User Registration page.
+- Fields:
+  - Full Name
+  - Email Address
+  - Password
+- Matches Login page aesthetic and design system.
+- Currently includes mock redirect to /shop.
+
+---
+
+### 3 src/Pages/AdminSignup.jsx (New)
+- Dedicated Admin Registration page.
+- Fields:
+  - Full Name
+  - Email Address
+  - Store Name
+  - Password
+- Matches Login page premium UI styling.
+- Currently includes mock redirect to /admin/dashboard.
+
+---
+
+### 4 src/App.jsx (Modified)
+- Imported UserSignup and AdminSignup.
+- Registered new routes:
+  - /signup/user
+  - /signup/admin
+- Integrated into main <Routes> tree.
+
+---
+
+#  Backend Database Architecture (Node.js + Mongoose)
+
+###  Objective
+Design and implement a production-ready, concurrency-safe, transaction-based database layer for the Inventory Management System.
+
+All backend changes scoped within:
+
+\:/CSI/Team-12/server/\
+
+---
+
+#  Database Models Implemented
+
+---
+
+## 1 server/models/User.js
+- Strict required field validation.
+- Email:
+  - unique: true
+  - Regex validation
+  - Indexed
+- Role enforced using enum:
+  - ['admin', 'user']
+- Designed to support dual signup flow securely.
+
+---
+
+## 2 server/models/Product.js
+- Enforced:
+  - price minimum = 0
+  - stock minimum = 0
+- Guaranteed SKU uniqueness via indexing.
+- Default lowStockThreshold configured.
+- Linked createdBy to User ObjectId.
+- Prevents negative inventory states at schema level.
+
+---
+
+## 3 server/models/Sale.js
+- Embedded items array containing:
+  - productId
+  - quantity
+  - priceAtSale (Snapshot Pricing)
+- Snapshot pricing ensures historical report accuracy even if product price changes later.
+- Enforced sale status enum:
+  - pending
+  - completed
+  - cancelled
+
+---
+
+## 4 server/models/Bill.js
+- References Sale via ObjectId.
+- Enforced unique, indexed qrString.
+- Designed for QR + OCR validation workflow.
+
+---
+
+## 5 server/models/AuditLog.js
+- Captures:
+  - userId
+  - ctionType
+  - collectionName
+  - documentId
+  - previousData
+  - 
+ewData
+- Applied compound indexing on:
+  - userId
+  - 	imestamp
+- Designed for high-volume audit querying efficiency.
+
+---
+
+#  Concurrency & Transaction Services
+
+##  server/services/saleService.js
+
+###  educeStockAtomically()
+Implements MongoDB atomic stock reduction using:
+
+\indOneAndUpdate({ stock: { $gte: quantity } })\
+
+Guarantees:
+- No race-condition overselling
+- Stock can never fall below zero
+- Thread-safe atomic updates
+- Multi-user safety under simultaneous requests
+
+---
+
+###  createSaleTransaction()
+Wraps entire sale lifecycle inside:
+
+\session.startTransaction()\
+
+Operations included:
+
+1. Stock reduction
+2. Sale creation
+3. Bill generation
+4. Audit logging
+5. Commit transaction
+
+If any step fails:
+- Executes session.abortTransaction()
+- Prevents ghost transactions
+- Prevents mismatched stock and financial records
+- Ensures strict ACID-compliant behavior
+
+---
+
+#  Backend Architecture Documentation
+
+##  server/README-backend.md
+- Defined scalable folder structure:
+  - models/
+  - services/
+  - controllers/
+  - routes/
+  - middlewares/
+- Established separation of concerns:
+  - Data Layer (Models)
+  - Business Logic (Services)
+  - API Layer (Controllers & Routes)
+- Documented maintainability principles for future backend expansion.
+
+---
+
+#  Summary of Todays Achievements
+
+- Implemented dual-role authentication UI.
+- Designed strict database schema architecture.
+- Enforced validation and indexing strategies.
+- Implemented atomic concurrency-safe stock control.
+- Built full transaction-based sale workflow.
+- Structured backend using production engineering principles.

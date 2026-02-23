@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react"
 import { Routes, Route } from "react-router-dom"
-
 import Landing from "./Pages/Landing"
 import Login from "./Pages/Login"
+import UserSignup from "./Pages/UserSignup"
+import AdminSignup from "./Pages/AdminSignup"
 
 // Admin Pages
 import Dashboard from "./Pages/admin/Dashboard"
@@ -84,6 +85,8 @@ function App() {
         {/* Public Routes */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/signup/user" element={<UserSignup />} />
+        <Route path="/signup/admin" element={<AdminSignup />} />
 
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminLayout />}>
