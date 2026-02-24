@@ -8,12 +8,36 @@ export default function AdminSignup() {
     const [storeName, setStoreName] = useState("")
     const [password, setPassword] = useState("")
 
-    const handleSignup = (e) => {
+    const handleSignup = async (e) => {
         e.preventDefault()
 
-        // Temporary mock signup
-        // Later backend will save admin
-        navigate("/admin/dashboard")
+        try {
+            const response = await fetch("http://localhost:5000/api/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ name, email, password, storeName, role: "admin" }),
+            })
+
+            const data = await response.json()
+
+            if (response.ok) {
+                localStorage.setItem("token", data.token)
+                localStorage.setItem("user", JSON.stringify({
+                    id: data._id,
+                    name: data.name,
+                    email: data.email,
+                    role: data.role
+                }))
+                navigate("/admin/dashboard")
+            } else {
+                alert(data.message || "Signup failed")
+            }
+        } catch (error) {
+            console.error("Signup error:", error)
+            alert("Something went wrong. Please check if the server is running.")
+        }
     }
 
     return (

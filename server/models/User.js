@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -10,7 +11,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Email is required'],
         unique: true,
-        index: true,
         lowercase: true,
         trim: true,
         match: [/^\S+@\S+\.\S+$/, 'Please use a valid email address']
@@ -31,6 +31,10 @@ const userSchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true
+    },
+    storeName: {
+        type: String,
+        trim: true
     }
 }, {
     timestamps: true // Adds createdAt and updatedAt
@@ -38,6 +42,21 @@ const userSchema = new mongoose.Schema({
 
 // Explicitly ensure the unique index on email is created
 userSchema.index({ email: 1 }, { unique: true });
+
+// Match user entered password to hashed password in database
+userSchema.methods.matchPassword = async function (enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password);
+};
+
+// Encrypt password using bcrypt
+userSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) {
+        next();
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+});
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;

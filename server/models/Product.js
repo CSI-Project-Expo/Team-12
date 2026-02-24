@@ -4,20 +4,17 @@ const productSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, 'Product name is required'],
-        index: true,
         trim: true
     },
     sku: {
         type: String,
         required: [true, 'SKU is required'],
         unique: true,
-        index: true,
         trim: true,
         uppercase: true
     },
     category: {
         type: String,
-        index: true,
         trim: true
     },
     price: {

@@ -20,6 +20,7 @@ import Checkout from "./Pages/customer/Checkout"
 import OrderConfirmation from "./Pages/customer/OrderConfirmation"
 
 import AdminLayout from "./Layouts/AdminLayout"
+import ProtectedRoute from "./components/ProtectedRoute"
 
 function App() {
 
@@ -89,7 +90,7 @@ function App() {
         <Route path="/signup/admin" element={<AdminSignup />} />
 
         {/* Admin Routes */}
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><AdminLayout /></ProtectedRoute>}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="products" element={<Products />} />
           <Route path="stock" element={<Stock />} />
@@ -101,19 +102,21 @@ function App() {
         {/* Customer Routes */}
         <Route
           path="/shop"
-          element={<Shop cartItems={cartItems} addToCart={addToCart} />}
+          element={<ProtectedRoute allowedRoles={['user']}><Shop cartItems={cartItems} addToCart={addToCart} /></ProtectedRoute>}
         />
         <Route
           path="/cart"
           element={
-            <Cart
-              cartItems={cartItems}
-              removeFromCart={removeFromCart}
-            />
+            <ProtectedRoute allowedRoles={['user']}>
+              <Cart
+                cartItems={cartItems}
+                removeFromCart={removeFromCart}
+              />
+            </ProtectedRoute>
           }
         />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/order-confirmation" element={<OrderConfirmation />} />
+        <Route path="/checkout" element={<ProtectedRoute allowedRoles={['user']}><Checkout /></ProtectedRoute>} />
+        <Route path="/order-confirmation" element={<ProtectedRoute allowedRoles={['user']}><OrderConfirmation /></ProtectedRoute>} />
 
       </Routes>
     </>

@@ -7,15 +7,43 @@ export default function Login() {
   const [password, setPassword] = useState("")
 
   // Temporary mock login
-  const handleLogin = (e) => {
+  // API login
+  const handleLogin = async (e) => {
     e.preventDefault()
 
-    // Later backend will decide role.
-    // For now we simulate:
-    if (email.includes("admin")) {
-      navigate("/admin/dashboard")
-    } else {
-      navigate("/shop")
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        // Store user info and token
+        localStorage.setItem("token", data.token)
+        localStorage.setItem("user", JSON.stringify({
+          id: data._id,
+          name: data.name,
+          email: data.email,
+          role: data.role
+        }))
+
+        // Redirect based on role
+        if (data.role === "admin") {
+          navigate("/admin/dashboard")
+        } else {
+          navigate("/shop")
+        }
+      } else {
+        alert(data.message || "Login failed")
+      }
+    } catch (error) {
+      console.error("Login error:", error)
+      alert("Something went wrong. Please check if the server is running.")
     }
   }
 
