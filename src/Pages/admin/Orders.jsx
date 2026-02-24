@@ -1,3 +1,5 @@
+import { motion } from "framer-motion"
+
 export default function Orders() {
   const orders = [
     {
@@ -27,71 +29,57 @@ export default function Orders() {
   ]
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
 
-      <h1 className="text-3xl font-semibold">
-        Orders
-      </h1>
-
-      <div className="bg-white rounded-xl shadow-md overflow-hidden">
-        <table className="w-full text-left text-sm">
-
-          <thead className="bg-[#E6DED3]">
-            <tr>
-              <th className="px-6 py-4">Order ID</th>
-              <th className="px-6 py-4">Customer</th>
-              <th className="px-6 py-4">Items</th>
-              <th className="px-6 py-4">Amount (₹)</th>
-              <th className="px-6 py-4">Date</th>
-              <th className="px-6 py-4">Status</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {orders.map((order) => (
-              <tr
-                key={order.id}
-                className="border-t hover:bg-[#F4F0EA] transition-all duration-200"
-              >
-                <td className="px-6 py-4 font-medium">
-                  {order.id}
-                </td>
-
-                <td className="px-6 py-4">
-                  {order.customer}
-                </td>
-
-                <td className="px-6 py-4">
-                  {order.items}
-                </td>
-
-                <td className="px-6 py-4">
-                  {order.amount}
-                </td>
-
-                <td className="px-6 py-4">
-                  {order.date}
-                </td>
-
-                <td className="px-6 py-4">
-                  {order.status === "Paid" ? (
-                    <span className="text-green-600 font-medium">
-                      Paid
-                    </span>
-                  ) : (
-                    <span className="text-yellow-600 font-medium">
-                      Pending
-                    </span>
-                  )}
-                </td>
-
-              </tr>
-            ))}
-          </tbody>
-
-        </table>
+      <div>
+        <h1 className="text-2xl font-bold text-slate-100">Orders</h1>
+        <p className="text-sm text-slate-500 mt-1">Manage and track customer orders</p>
       </div>
 
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="bg-slate-900 border border-slate-800/50 rounded-2xl overflow-hidden"
+      >
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-slate-800/50">
+              <th className="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Order ID</th>
+              <th className="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Customer</th>
+              <th className="text-center px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Items</th>
+              <th className="text-right px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Amount (₹)</th>
+              <th className="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Date</th>
+              <th className="text-center px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.map((order, idx) => (
+              <motion.tr
+                key={order.id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.2, delay: idx * 0.05 }}
+                className="border-b border-slate-800/30 hover:bg-slate-800/30 transition-colors"
+              >
+                <td className="px-6 py-4 font-medium text-slate-200 font-mono text-xs">{order.id}</td>
+                <td className="px-6 py-4 text-slate-300">{order.customer}</td>
+                <td className="px-6 py-4 text-center text-slate-400">{order.items}</td>
+                <td className="px-6 py-4 text-right text-slate-300">₹{order.amount.toLocaleString('en-IN')}</td>
+                <td className="px-6 py-4 text-slate-400">{order.date}</td>
+                <td className="px-6 py-4 text-center">
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${order.status === "Paid"
+                      ? "bg-emerald-500/10 text-emerald-400"
+                      : "bg-amber-500/10 text-amber-400"
+                    }`}>
+                    {order.status}
+                  </span>
+                </td>
+              </motion.tr>
+            ))}
+          </tbody>
+        </table>
+      </motion.div>
     </div>
   )
 }

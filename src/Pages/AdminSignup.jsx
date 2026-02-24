@@ -1,5 +1,7 @@
 import { useNavigate, Link } from "react-router-dom"
 import { useState } from "react"
+import { motion } from "framer-motion"
+import { UserPlus } from "lucide-react"
 
 export default function AdminSignup() {
     const navigate = useNavigate()
@@ -7,9 +9,11 @@ export default function AdminSignup() {
     const [email, setEmail] = useState("")
     const [storeName, setStoreName] = useState("")
     const [password, setPassword] = useState("")
+    const [loading, setLoading] = useState(false)
 
     const handleSignup = async (e) => {
         e.preventDefault()
+        setLoading(true)
 
         try {
             const response = await fetch("http://localhost:5000/api/auth/register", {
@@ -37,73 +41,98 @@ export default function AdminSignup() {
         } catch (error) {
             console.error("Signup error:", error)
             alert("Something went wrong. Please check if the server is running.")
+        } finally {
+            setLoading(false)
         }
     }
 
     return (
-        <div className="relative min-h-screen bg-gradient-to-br from-[#E6DED3] via-[#EDE7DE] to-[#D8CFC3] flex items-center justify-center overflow-hidden">
+        <div className="relative min-h-screen bg-slate-950 flex items-center justify-center overflow-hidden">
 
-            {/* Soft Glow Background */}
+            {/* Background Glow */}
             <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-                <div className="absolute top-10 right-1/4 w-[500px] h-[500px] bg-[#A89B8A]/20 rounded-full blur-3xl"></div>
+                <div className="absolute top-10 right-1/4 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-3xl" />
             </div>
 
             {/* Signup Card */}
-            <div className="relative bg-white/60 backdrop-blur-md shadow-lg rounded-xl p-10 w-full max-w-md transition-all duration-300">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="relative bg-slate-900 border border-slate-800/50 shadow-2xl rounded-2xl p-10 w-full max-w-md"
+            >
+                {/* Header */}
+                <div className="text-center mb-8">
+                    <h1 className="text-xl font-bold tracking-tight mb-2">
+                        <span className="text-emerald-400">Stock</span><span className="text-slate-100">Flow</span>
+                    </h1>
+                    <h2 className="text-2xl font-bold text-slate-100">Create Admin Account</h2>
+                    <p className="text-sm text-slate-500 mt-1">Set up your store management</p>
+                </div>
 
-                <h2 className="text-3xl font-semibold text-center mb-8 text-[#1C1C1C]">
-                    Create Admin Account
-                </h2>
+                <form onSubmit={handleSignup} className="flex flex-col gap-4">
 
-                <form onSubmit={handleSignup} className="flex flex-col gap-5">
+                    <div>
+                        <label className="text-xs font-medium text-slate-400 mb-1.5 block">Full Name</label>
+                        <input
+                            type="text"
+                            placeholder="John Doe"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            required
+                            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                        />
+                    </div>
 
-                    <input
-                        type="text"
-                        placeholder="Full Name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                        className="px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#A89B8A] transition-all duration-300"
-                    />
+                    <div>
+                        <label className="text-xs font-medium text-slate-400 mb-1.5 block">Email Address</label>
+                        <input
+                            type="email"
+                            placeholder="you@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                        />
+                    </div>
 
-                    <input
-                        type="email"
-                        placeholder="Email Address"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        className="px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#A89B8A] transition-all duration-300"
-                    />
+                    <div>
+                        <label className="text-xs font-medium text-slate-400 mb-1.5 block">Store Name</label>
+                        <input
+                            type="text"
+                            placeholder="My Grocery Store"
+                            value={storeName}
+                            onChange={(e) => setStoreName(e.target.value)}
+                            required
+                            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                        />
+                    </div>
 
-                    <input
-                        type="text"
-                        placeholder="Store Name"
-                        value={storeName}
-                        onChange={(e) => setStoreName(e.target.value)}
-                        required
-                        className="px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#A89B8A] transition-all duration-300"
-                    />
-
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        className="px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#A89B8A] transition-all duration-300"
-                    />
+                    <div>
+                        <label className="text-xs font-medium text-slate-400 mb-1.5 block">Password</label>
+                        <input
+                            type="password"
+                            placeholder="••••••••"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                        />
+                    </div>
 
                     <button
                         type="submit"
-                        className="mt-4 px-6 py-3 bg-[#1C1C1C] text-white rounded-md hover:scale-105 transition-all duration-300 shadow-md"
+                        disabled={loading}
+                        className="mt-2 flex items-center justify-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Register Store Admin
+                        <UserPlus size={16} />
+                        {loading ? "Creating account..." : "Register Store Admin"}
                     </button>
 
-                    <div className="mt-4 flex justify-center text-sm text-[#1C1C1C]/80">
+                    <div className="mt-4 flex justify-center text-sm text-slate-500">
                         <p>
                             Already have an account?{" "}
-                            <Link to="/login" className="font-semibold underline hover:text-black">
+                            <Link to="/login" className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors">
                                 Login
                             </Link>
                         </p>
@@ -111,7 +140,7 @@ export default function AdminSignup() {
 
                 </form>
 
-            </div>
+            </motion.div>
         </div>
     )
 }

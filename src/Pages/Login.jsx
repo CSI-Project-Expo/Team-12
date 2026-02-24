@@ -1,15 +1,17 @@
 import { useNavigate, Link } from "react-router-dom"
 import { useState } from "react"
+import { motion } from "framer-motion"
+import { LogIn } from "lucide-react"
 
 export default function Login() {
   const navigate = useNavigate()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  // Temporary mock login
-  // API login
   const handleLogin = async (e) => {
     e.preventDefault()
+    setLoading(true)
 
     try {
       const response = await fetch("http://localhost:5000/api/auth/login", {
@@ -23,7 +25,6 @@ export default function Login() {
       const data = await response.json()
 
       if (response.ok) {
-        // Store user info and token
         localStorage.setItem("token", data.token)
         localStorage.setItem("user", JSON.stringify({
           id: data._id,
@@ -32,7 +33,6 @@ export default function Login() {
           role: data.role
         }))
 
-        // Redirect based on role
         if (data.role === "admin") {
           navigate("/admin/dashboard")
         } else {
@@ -44,61 +44,80 @@ export default function Login() {
     } catch (error) {
       console.error("Login error:", error)
       alert("Something went wrong. Please check if the server is running.")
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-[#E6DED3] via-[#EDE7DE] to-[#D8CFC3] flex items-center justify-center overflow-hidden">
+    <div className="relative min-h-screen bg-slate-950 flex items-center justify-center overflow-hidden">
 
-      {/* Soft Glow Background */}
+      {/* Background Glow */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-        <div className="absolute top-40 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-[#A89B8A]/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-40 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-3xl" />
       </div>
 
       {/* Login Card */}
-      <div className="relative bg-white/60 backdrop-blur-md shadow-lg rounded-xl p-10 w-full max-w-md transition-all duration-300">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="relative bg-slate-900 border border-slate-800/50 shadow-2xl rounded-2xl p-10 w-full max-w-md"
+      >
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-xl font-bold tracking-tight mb-2">
+            <span className="text-emerald-400">Stock</span><span className="text-slate-100">Flow</span>
+          </h1>
+          <h2 className="text-2xl font-bold text-slate-100">Welcome Back</h2>
+          <p className="text-sm text-slate-500 mt-1">Sign in to your account</p>
+        </div>
 
-        <h2 className="text-3xl font-semibold text-center mb-8 text-[#1C1C1C]">
-          Welcome Back
-        </h2>
+        <form onSubmit={handleLogin} className="flex flex-col gap-4">
 
-        <form onSubmit={handleLogin} className="flex flex-col gap-5">
+          <div>
+            <label className="text-xs font-medium text-slate-400 mb-1.5 block">Email Address</label>
+            <input
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+            />
+          </div>
 
-          <input
-            type="email"
-            placeholder="Email Address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#A89B8A] transition-all duration-300"
-          />
-
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#A89B8A] transition-all duration-300"
-          />
+          <div>
+            <label className="text-xs font-medium text-slate-400 mb-1.5 block">Password</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+            />
+          </div>
 
           <button
             type="submit"
-            className="mt-4 px-6 py-3 bg-[#1C1C1C] text-white rounded-md hover:scale-105 transition-all duration-300 shadow-md"
+            disabled={loading}
+            className="mt-2 flex items-center justify-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Login
+            <LogIn size={16} />
+            {loading ? "Signing in..." : "Login"}
           </button>
 
-          <div className="mt-4 flex flex-col items-center gap-3 text-sm text-[#1C1C1C]/80">
+          <div className="mt-4 flex flex-col items-center gap-2 text-sm text-slate-500">
             <p>
               New here?{" "}
-              <Link to="/signup/user" className="font-semibold underline hover:text-black">
+              <Link to="/signup/user" className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors">
                 Create User Account
               </Link>
             </p>
             <p>
               Owning a store?{" "}
-              <Link to="/signup/admin" className="font-semibold underline hover:text-black">
+              <Link to="/signup/admin" className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors">
                 Create Admin Account
               </Link>
             </p>
@@ -106,7 +125,7 @@ export default function Login() {
 
         </form>
 
-      </div>
+      </motion.div>
     </div>
   )
 }
