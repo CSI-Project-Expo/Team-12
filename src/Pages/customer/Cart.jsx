@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom"
-import { Trash2, ShoppingBag } from "lucide-react"
+import { Link, useNavigate } from "react-router-dom"
+import { Trash2 } from "lucide-react"
 import { motion } from "framer-motion"
 
 export default function Cart({ cartItems, removeFromCart }) {
+  const navigate = useNavigate()
 
   const totalAmount = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -21,13 +22,17 @@ export default function Cart({ cartItems, removeFromCart }) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-slate-900 border border-slate-800/50 rounded-2xl p-12 text-center"
+          className="flex flex-col items-center justify-center min-h-[60vh] text-center"
         >
-          <ShoppingBag size={32} className="text-slate-600 mx-auto mb-3" />
-          <p className="text-slate-500">Your cart is empty.</p>
-          <Link to="/shop" className="text-emerald-400 hover:text-emerald-300 text-sm font-medium mt-2 inline-block">
+          <div className="text-6xl mb-4">🛒</div>
+          <h2 className="text-2xl font-semibold text-white">Your cart is empty</h2>
+          <p className="text-gray-400 mt-2">Add items from the shop to get started.</p>
+          <button
+            onClick={() => navigate('/shop')}
+            className="mt-6 px-6 py-2 bg-white text-black rounded-lg hover:scale-105 transition-all font-medium"
+          >
             Continue Shopping
-          </Link>
+          </button>
         </motion.div>
       ) : (
         <div className="space-y-4">
@@ -49,7 +54,7 @@ export default function Cart({ cartItems, removeFromCart }) {
 
               <button
                 onClick={() => removeFromCart(item.id)}
-                className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-2 rounded-lg transition-all"
+                className="text-slate-500 hover:text-red-400 hover:bg-red-500/10 p-2 rounded-lg transition-all duration-200 active:scale-95"
               >
                 <Trash2 size={16} />
               </button>
@@ -61,12 +66,13 @@ export default function Cart({ cartItems, removeFromCart }) {
               Total: <span className="text-emerald-400">₹{totalAmount.toLocaleString('en-IN')}</span>
             </h2>
 
-            <Link
-              to="/checkout"
-              className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/25"
+            <button
+              onClick={() => navigate('/checkout')}
+              disabled={cartItems.length === 0}
+              className="bg-gradient-to-r from-white to-gray-300 text-black px-6 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Proceed to Checkout
-            </Link>
+            </button>
           </div>
 
         </div>

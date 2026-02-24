@@ -13,6 +13,8 @@ export default function Shop({ cartItems, addToCart }) {
   ]
 
   const [quantities, setQuantities] = useState({})
+  const [addedProductId, setAddedProductId] = useState(null)
+  const [animateCart, setAnimateCart] = useState(false)
 
   const increaseQty = (id, stock) => {
     setQuantities(prev => ({
@@ -32,6 +34,10 @@ export default function Shop({ cartItems, addToCart }) {
     const quantity = quantities[product.id] || 1
     addToCart(product, quantity)
     setQuantities(prev => ({ ...prev, [product.id]: 1 }))
+    setAddedProductId(product.id)
+    setTimeout(() => setAddedProductId(null), 1200)
+    setAnimateCart(true)
+    setTimeout(() => setAnimateCart(false), 400)
   }
 
   return (
@@ -45,10 +51,13 @@ export default function Shop({ cartItems, addToCart }) {
 
         <Link
           to="/cart"
-          className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/25"
+          className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-emerald-500/25"
         >
           <ShoppingCart size={16} />
-          Cart: {cartItems.length}
+          Cart
+          <span className={`ml-2 px-2 py-1 text-sm bg-white text-black rounded-full ${animateCart ? 'animate-bounce' : ''}`}>
+            {cartItems.length}
+          </span>
         </Link>
       </div>
 
@@ -93,9 +102,12 @@ export default function Shop({ cartItems, addToCart }) {
 
               <button
                 onClick={() => handleAddToCart(product)}
-                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/25"
+                className={`w-full py-2.5 rounded-xl text-sm font-medium transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-lg ${addedProductId === product.id
+                  ? "bg-green-500 text-black"
+                  : "bg-emerald-500 hover:bg-emerald-600 text-white hover:shadow-emerald-500/25"
+                  }`}
               >
-                Add to Cart
+                {addedProductId === product.id ? "✓ Added!" : "Add to Cart"}
               </button>
             </motion.div>
           )

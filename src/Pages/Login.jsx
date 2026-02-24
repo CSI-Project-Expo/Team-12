@@ -8,10 +8,12 @@ export default function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const handleLogin = async (e) => {
     e.preventDefault()
     setLoading(true)
+    setError("")
 
     try {
       const response = await fetch("http://localhost:5000/api/auth/login", {
@@ -39,18 +41,18 @@ export default function Login() {
           navigate("/shop")
         }
       } else {
-        alert(data.message || "Login failed")
+        setError(data.message || "Login failed")
       }
-    } catch (error) {
-      console.error("Login error:", error)
-      alert("Something went wrong. Please check if the server is running.")
+    } catch (err) {
+      console.error("Login error:", err)
+      setError("Something went wrong. Please check if the server is running.")
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="relative min-h-screen bg-slate-950 flex items-center justify-center overflow-hidden">
+    <div className="relative min-h-screen bg-slate-950 flex items-center justify-center overflow-hidden transition-all duration-300">
 
       {/* Background Glow */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
@@ -99,12 +101,25 @@ export default function Login() {
             />
           </div>
 
+          {error && (
+            <div className="bg-red-500/10 border border-red-500 text-red-400 px-4 py-2 rounded-lg mb-4 text-sm">
+              {error}
+            </div>
+          )}
+
           <button
             type="submit"
             disabled={loading}
             className="mt-2 flex items-center justify-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <LogIn size={16} />
+            {loading ? (
+              <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+            ) : (
+              <LogIn size={16} />
+            )}
             {loading ? "Signing in..." : "Login"}
           </button>
 
