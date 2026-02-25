@@ -4,6 +4,8 @@ import Landing from "./Pages/Landing"
 import Login from "./Pages/Login"
 import UserSignup from "./Pages/UserSignup"
 import AdminSignup from "./Pages/AdminSignup"
+import QRGenerator from "./Pages/QRGenerator"
+import OCRScanner from "./Pages/OCRScanner"
 
 // Admin Pages
 import Dashboard from "./Pages/admin/Dashboard"
@@ -147,6 +149,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup/user" element={<UserSignup />} />
         <Route path="/signup/admin" element={<AdminSignup />} />
+        <Route path="/qr-generator" element={<QRGenerator />} />
+        <Route path="/ocr-scanner" element={<OCRScanner />} />
 
         {/* Admin Routes */}
         <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><AdminLayout /></ProtectedRoute>}>

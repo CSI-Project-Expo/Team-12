@@ -18,12 +18,20 @@ export default function Landing() {
           <span className="text-emerald-400">Stock</span>Smart
         </h1>
 
-        <Link
-          to="/login"
-          className="px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-medium transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/25"
-        >
-          Login
-        </Link>
+        <div className="flex gap-4">
+          <Link
+            to="/qr-generator"
+            className="px-5 py-2 text-slate-300 hover:text-emerald-400 rounded-xl text-sm font-medium transition-all duration-200"
+          >
+            QR Generator
+          </Link>
+          <Link
+            to="/login"
+            className="px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-medium transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/25"
+          >
+            Login
+          </Link>
+        </div>
       </nav>
 
       {/* Hero Section */}
