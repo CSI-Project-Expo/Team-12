@@ -53,7 +53,8 @@ export default function Checkout({ cartItems, shopId, shopName, clearCart }) {
           orderId: data.orderId,
           totalAmount: data.totalAmount,
           itemCount: data.itemCount,
-          shopName
+          shopName,
+          qrString: data.qrString
         }
       })
 

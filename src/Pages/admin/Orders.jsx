@@ -1,32 +1,57 @@
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
+import { Loader2, AlertTriangle } from "lucide-react"
+import api from "../../lib/api"
 
 export default function Orders() {
-  const orders = [
-    {
-      id: "ORD001",
-      customer: "Rahul Sharma",
-      amount: 1450,
-      items: 3,
-      date: "2026-02-21",
-      status: "Paid",
-    },
-    {
-      id: "ORD002",
-      customer: "Priya Mehta",
-      amount: 780,
-      items: 2,
-      date: "2026-02-21",
-      status: "Pending",
-    },
-    {
-      id: "ORD003",
-      customer: "Amit Verma",
-      amount: 2240,
-      items: 5,
-      date: "2026-02-20",
-      status: "Paid",
-    },
-  ]
+  const [orders, setOrders] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const { data } = await api.get('/orders')
+
+        const mappedOrders = data.map(order => ({
+          id: order._id.slice(-6).toUpperCase(), // short ID
+          fullId: order._id,
+          customer: order.customerId?.name || "Guest",
+          amount: order.totalAmount,
+          items: order.items.length,
+          date: new Date(order.createdAt).toLocaleDateString("en-IN", {
+            year: "numeric", month: "short", day: "numeric"
+          }),
+          status: order.status.charAt(0).toUpperCase() + order.status.slice(1),
+        }))
+
+        setOrders(mappedOrders)
+      } catch (err) {
+        console.error("Error fetching orders:", err)
+        setError("Failed to fetch orders.")
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchOrders()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-48">
+        <Loader2 className="animate-spin text-emerald-400" size={32} />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-500/10 border border-red-500 text-red-400 px-6 py-4 rounded-xl flex items-center gap-3">
+        <AlertTriangle size={20} />
+        <p>{error}</p>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -69,8 +94,8 @@ export default function Orders() {
                 <td className="px-6 py-4 text-slate-400">{order.date}</td>
                 <td className="px-6 py-4 text-center">
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${order.status === "Paid"
-                      ? "bg-emerald-500/10 text-emerald-400"
-                      : "bg-amber-500/10 text-amber-400"
+                    ? "bg-emerald-500/10 text-emerald-400"
+                    : "bg-amber-500/10 text-amber-400"
                     }`}>
                     {order.status}
                   </span>

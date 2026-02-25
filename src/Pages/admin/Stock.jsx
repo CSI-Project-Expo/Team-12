@@ -1,40 +1,59 @@
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
+import { Loader2, AlertTriangle } from "lucide-react"
+import api from "../../lib/api"
 
 export default function Stock() {
-  const movements = [
-    {
-      id: 1,
-      product: "Moong Dal",
-      type: "Restock",
-      quantity: +20,
-      date: "2026-02-20",
-      updatedStock: 65,
-    },
-    {
-      id: 2,
-      product: "Urad Dal",
-      type: "Sale",
-      quantity: -5,
-      date: "2026-02-20",
-      updatedStock: 1,
-    },
-    {
-      id: 3,
-      product: "Basmati Rice",
-      type: "Sale",
-      quantity: -3,
-      date: "2026-02-19",
-      updatedStock: 9,
-    },
-    {
-      id: 4,
-      product: "Sugar",
-      type: "Restock",
-      quantity: +40,
-      date: "2026-02-18",
-      updatedStock: 80,
-    },
-  ]
+  const [movements, setMovements] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    const fetchLogs = async () => {
+      try {
+        const { data } = await api.get('/audit-logs')
+
+        // Map backend fields to UI fields
+        const mappedMovements = data.map(log => ({
+          id: log._id,
+          product: log.productName || "Unknown Product",
+          type: log.actionType === 'SALE_DEDUCTION' ? 'Sale' :
+            log.actionType === 'RESTOCK' ? 'Restock' : 'Adjustment',
+          quantity: log.newData?.quantity || 0,
+          date: new Date(log.timestamp).toLocaleDateString("en-IN", {
+            year: "numeric", month: "long", day: "numeric",
+            hour: "2-digit", minute: "2-digit"
+          }),
+          updatedStock: log.newData?.stock || 0,
+        }))
+
+        setMovements(mappedMovements)
+      } catch (err) {
+        console.error("Error fetching logs:", err)
+        setError("Failed to fetch stock movements.")
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchLogs()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-48">
+        <Loader2 className="animate-spin text-emerald-400" size={32} />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-500/10 border border-red-500 text-red-400 px-6 py-4 rounded-xl flex items-center gap-3">
+        <AlertTriangle size={20} />
+        <p>{error}</p>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -72,8 +91,8 @@ export default function Stock() {
                 <td className="px-6 py-4 font-medium text-slate-200">{move.product}</td>
                 <td className="px-6 py-4">
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${move.type === "Sale"
-                      ? "bg-red-500/10 text-red-400"
-                      : "bg-emerald-500/10 text-emerald-400"
+                    ? "bg-red-500/10 text-red-400"
+                    : "bg-emerald-500/10 text-emerald-400"
                     }`}>
                     {move.type}
                   </span>

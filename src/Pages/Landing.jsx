@@ -20,12 +20,6 @@ export default function Landing() {
 
         <div className="flex gap-4">
           <Link
-            to="/qr-generator"
-            className="px-5 py-2 text-slate-300 hover:text-emerald-400 rounded-xl text-sm font-medium transition-all duration-200"
-          >
-            QR Generator
-          </Link>
-          <Link
             to="/login"
             className="px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-medium transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/25"
           >
@@ -61,9 +55,9 @@ export default function Landing() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mt-8 text-base md:text-lg max-w-2xl text-slate-400 leading-relaxed"
         >
-          Manage stock effortlessly, prevent overselling in real-time, scan
-          supplier bills with intelligent OCR, and receive AI-driven stock
-          recommendations — all within one elegant platform.
+          Manage stock effortlessly, prevent overselling in real-time, generate
+          tamper-proof bills, and receive AI-driven stock recommendations
+          — all within one elegant platform.
         </motion.p>
 
         <motion.div
@@ -98,7 +92,6 @@ export default function Landing() {
       >
         {[
           { icon: Package, title: "Real-time Stock", desc: "Atomic stock updates prevent overselling with concurrent request safety." },
-          { icon: Zap, title: "OCR Processing", desc: "Upload supplier bills and auto-extract product data with intelligent OCR." },
           { icon: Shield, title: "Transaction Safe", desc: "ACID-compliant MongoDB transactions guarantee data integrity." },
         ].map((feature, idx) => (
           <div

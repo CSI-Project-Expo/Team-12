@@ -11,13 +11,17 @@ import {
   ChevronDown,
   Sparkles,
   X,
-  Send
+  Send,
+  TrendingUp,
+  ScanLine
 } from "lucide-react"
 
 const navItems = [
   { label: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
   { label: "Products", path: "/admin/products", icon: Package },
   { label: "Stock", path: "/admin/stock", icon: BarChart3 },
+  { label: "Reports", path: "/admin/reports", icon: TrendingUp },
+  { label: "Bill Scanner", path: "/admin/bill-scanner", icon: ScanLine },
   { label: "Supplier Bills", path: "/admin/supplier-bills", icon: FileText },
   { label: "Orders", path: "/admin/orders", icon: ShoppingCart },
   { label: "Settings", path: "/admin/settings", icon: Settings },

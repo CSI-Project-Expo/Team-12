@@ -4,8 +4,6 @@ import Landing from "./Pages/Landing"
 import Login from "./Pages/Login"
 import UserSignup from "./Pages/UserSignup"
 import AdminSignup from "./Pages/AdminSignup"
-import QRGenerator from "./Pages/QRGenerator"
-import OCRScanner from "./Pages/OCRScanner"
 
 // Admin Pages
 import Dashboard from "./Pages/admin/Dashboard"
@@ -14,6 +12,8 @@ import Stock from "./Pages/admin/Stock"
 import SupplierBills from "./Pages/admin/SupplierBills"
 import Orders from "./Pages/admin/Orders"
 import Settings from "./Pages/admin/Settings"
+import Reports from "./Pages/admin/Reports"
+import BillScanner from "./Pages/admin/BillScanner"
 
 // Customer Pages
 import ShopsList from "./Pages/customer/ShopsList"
@@ -149,14 +149,14 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup/user" element={<UserSignup />} />
         <Route path="/signup/admin" element={<AdminSignup />} />
-        <Route path="/qr-generator" element={<QRGenerator />} />
-        <Route path="/ocr-scanner" element={<OCRScanner />} />
 
         {/* Admin Routes */}
         <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><AdminLayout /></ProtectedRoute>}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="products" element={<Products />} />
           <Route path="stock" element={<Stock />} />
+          <Route path="reports" element={<Reports />} />
+          <Route path="bill-scanner" element={<BillScanner />} />
           <Route path="supplier-bills" element={<SupplierBills />} />
           <Route path="orders" element={<Orders />} />
           <Route path="settings" element={<Settings />} />

@@ -720,3 +720,68 @@ Convert the application from a single-store demo into a multi-shop inventory man
 - **Shop inventory showing no products** → Fixed by implementing backend product persistence
 - **Order placement returning 500 error** → Fixed by removing MongoDB transaction dependency
 - **Missing logout on customer side** → Added logout button in ShopsList
+
+---
+
+## 📅 Update — 26 February 2026
+
+### 1. Work Completed (What Is Done)
+
+#### 1.1 Backend Stability & Bug Fixes
+- Added missing AuditLog enums (`SALE_DEDUCTION`, `RESTOCK`, `ADJUSTMENT`) to prevent crashes.
+- Fixed “Cannot set headers after they are sent” error in authentication middleware.
+- Wrapped authentication controllers (`registerUser`, `loginUser`, `getUserProfile`, `updateUserProfile`) in proper try/catch blocks.
+- Implemented soft-delete feature for products (`isDeleted: true`).
+- Created `DELETE /api/products/:id` endpoint.
+
+#### 1.2 Production Hardening
+- Implemented global error-handling middleware.
+- Added database connection retry logic with exponential backoff.
+- Implemented unhandled promise rejection catchers.
+- Improved backend reliability to prevent server crashes.
+
+#### 1.3 Automated Backend Testing
+- Set up in-memory MongoDB Replica Set using `MongoMemoryReplSet`.
+- Implemented 16 automated backend tests.
+- Verified:
+  - Duplicate email prevention.
+  - Concurrency safety (no overselling).
+  - Proper transaction rollback on failed orders.
+
+#### 1.4 QR Code & Ticket System
+- Designed premium Order Confirmation Ticket UI.
+- Ensured Order ID matches real database `orderId`.
+- Implemented functional “Download Ticket” button.
+- Replaced live camera scanner with Upload QR Image feature.
+- Integrated `html5-qrcode` library for QR extraction.
+- Successfully tested complete end-to-end QR verification workflow.
+
+### 2. Work Pending (What Is Left)
+
+#### 2.1 Chatbot Integration (Pending)
+- AI chatbot feature not implemented.
+- Planned for:
+  - Customer support
+  - Order tracking
+  - Inventory queries
+  - Smart assistance
+
+#### 2.2 OCR Feature
+- OCR functionality removed completely.
+- System now operates only with digital QR verification.
+
+#### 2.3 Frontend Automated Testing
+- Backend testing completed.
+- UI automated testing (Cypress/Selenium) not implemented.
+- Only manual testing performed.
+
+#### 2.4 Deployment & Production Setup
+- MongoDB Atlas cluster setup pending.
+- `.env` production configuration pending.
+- Cloud deployment (Render/Vercel/Netlify) pending.
+- Real-device staging validation pending.
+
+### Current Status
+- The backend is stable, secure, and production-ready at code level.
+- The QR verification system is fully functional.
+- Chatbot integration and cloud deployment are the next major steps.

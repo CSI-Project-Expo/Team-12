@@ -35,6 +35,24 @@ const userSchema = new mongoose.Schema({
     storeName: {
         type: String,
         trim: true
+    },
+    phone: {
+        type: String,
+        trim: true
+    },
+    location: {
+        type: String,
+        trim: true
+    },
+    notificationEmail: {
+        type: String,
+        lowercase: true,
+        trim: true,
+        match: [/^\S+@\S+\.\S+$/, 'Please use a valid email address']
+    },
+    lowStockThreshold: {
+        type: Number,
+        default: 5
     }
 }, {
     timestamps: true // Adds createdAt and updatedAt
