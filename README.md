@@ -657,3 +657,66 @@ Uses MongoDB `$expr` to compare two fields within the same document.
 - Added 4 new read-only backend files (zero impact on existing logic).
 - All 14 pages now follow unified dark design system.
 - Backend safety fully maintained — no changes to transactions, schemas, or auth.
+
+---
+
+## 📅 Update — 25 February 2026
+
+### 🎯 Goal
+
+Convert the application from a single-store demo into a multi-shop inventory management system with real backend operations and proper role-based routing.
+
+---
+
+### 🆕 New Files
+
+#### shopController.js
+- `GET /api/shops` — Lists admin users with `storeName` as shops
+- `GET /api/shops/:id/products` — Fetches products using `createdBy`
+
+#### shopRoutes.js
+- Registers shop endpoints (JWT-protected)
+
+#### orderController.js
+- `POST /api/orders`
+- Validates stock for each item
+- Deducts stock using `$inc`
+- Creates Sale document
+- Returns real `orderId` and `totalAmount`
+- Replaced MongoDB transaction logic with sequential validation
+
+#### orderRoutes.js
+- Registers `POST /api/orders` (JWT-protected)
+
+#### ShopsList.jsx
+- New `/shops` page
+- Fetches shops from backend
+- Displays animated shop card grid
+- Added logout button and user greeting
+
+---
+
+### 🔄 Major Modifications
+
+#### Backend
+- Registered `/api/shops` and `/api/orders` routes
+- Added `createProduct()` to persist products in MongoDB
+- Scoped product queries to logged-in admin only
+- Added protected `POST /api/products` endpoint
+
+#### Frontend
+- Added `/shops` and `/shop/:shopId` routes
+- Implemented shop-scoped cart (`cartShopId`, `cartShopName`)
+- Cart auto-clears when switching shops
+- Removed hardcoded products
+- Replaced random checkout simulation with real order API call
+- Order confirmation now displays real backend order data
+- Updated user redirects from `/shop` → `/shops`
+- Rebranded application to **StockSmart**
+
+---
+
+### 🐛 Bugs Fixed
+- **Shop inventory showing no products** → Fixed by implementing backend product persistence
+- **Order placement returning 500 error** → Fixed by removing MongoDB transaction dependency
+- **Missing logout on customer side** → Added logout button in ShopsList
