@@ -33,7 +33,7 @@ export default function UserSignup() {
                     email: data.email,
                     role: data.role
                 }))
-                navigate("/shop")
+                navigate("/shops")
             } else {
                 alert(data.message || "Signup failed")
             }
@@ -63,7 +63,7 @@ export default function UserSignup() {
                 {/* Header */}
                 <div className="text-center mb-8">
                     <h1 className="text-xl font-bold tracking-tight mb-2">
-                        <span className="text-emerald-400">Stock</span><span className="text-slate-100">Flow</span>
+                        <span className="text-emerald-400">Stock</span><span className="text-slate-100">Smart</span>
                     </h1>
                     <h2 className="text-2xl font-bold text-slate-100">Create User Account</h2>
                     <p className="text-sm text-slate-500 mt-1">Start shopping from your favorite stores</p>

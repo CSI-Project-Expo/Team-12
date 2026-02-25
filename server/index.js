@@ -15,6 +15,8 @@ const startServer = async () => {
         app.use('/api/auth', require('./routes/authRoutes'));
         app.use('/api/products', require('./routes/productRoutes'));
         app.use('/api/dashboard', require('./routes/dashboardRoutes'));
+        app.use('/api/shops', require('./routes/shopRoutes'));
+        app.use('/api/orders', require('./routes/orderRoutes'));
 
         app.get('/', (req, res) => {
             res.send('Smart Inventory API is running...');

@@ -38,7 +38,7 @@ export default function Login() {
         if (data.role === "admin") {
           navigate("/admin/dashboard")
         } else {
-          navigate("/shop")
+          navigate("/shops")
         }
       } else {
         setError(data.message || "Login failed")
@@ -69,7 +69,7 @@ export default function Login() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-xl font-bold tracking-tight mb-2">
-            <span className="text-emerald-400">Stock</span><span className="text-slate-100">Flow</span>
+            <span className="text-emerald-400">Stock</span><span className="text-slate-100">Smart</span>
           </h1>
           <h2 className="text-2xl font-bold text-slate-100">Welcome Back</h2>
           <p className="text-sm text-slate-500 mt-1">Sign in to your account</p>

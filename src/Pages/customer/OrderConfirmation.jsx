@@ -1,10 +1,15 @@
-import { Link } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import { motion } from "framer-motion"
 import { CheckCircle, ShoppingBag } from "lucide-react"
 
 export default function OrderConfirmation() {
+  const location = useLocation()
+  const state = location.state || {}
 
-  const orderId = "ORD" + Math.floor(Math.random() * 100000)
+  const orderId = state.orderId || ("ORD" + Math.floor(Math.random() * 100000))
+  const totalAmount = state.totalAmount
+  const itemCount = state.itemCount
+  const shopName = state.shopName
 
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center p-10">
@@ -27,13 +32,38 @@ export default function OrderConfirmation() {
           Thank you for your purchase.
         </p>
 
-        <div className="bg-slate-800/50 border border-slate-700/50 p-4 rounded-xl">
-          <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">
-            Order ID
-          </p>
-          <p className="text-lg font-bold text-slate-100 mt-1 font-mono">
-            {orderId}
-          </p>
+        <div className="bg-slate-800/50 border border-slate-700/50 p-4 rounded-xl space-y-3">
+          <div>
+            <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">
+              Order ID
+            </p>
+            <p className="text-lg font-bold text-slate-100 mt-1 font-mono">
+              {orderId}
+            </p>
+          </div>
+
+          {totalAmount !== undefined && (
+            <div>
+              <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">
+                Total Amount
+              </p>
+              <p className="text-lg font-bold text-emerald-400 mt-1">
+                ₹{totalAmount.toLocaleString('en-IN')}
+              </p>
+            </div>
+          )}
+
+          {itemCount && (
+            <p className="text-sm text-slate-500">
+              {itemCount} item{itemCount !== 1 ? "s" : ""} ordered
+            </p>
+          )}
+
+          {shopName && (
+            <p className="text-sm text-slate-500">
+              From: {shopName}
+            </p>
+          )}
         </div>
 
         <p className="text-sm text-slate-500">
@@ -41,7 +71,7 @@ export default function OrderConfirmation() {
         </p>
 
         <Link
-          to="/shop"
+          to="/shops"
           className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/25"
         >
           <ShoppingBag size={16} />

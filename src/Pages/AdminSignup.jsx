@@ -64,7 +64,7 @@ export default function AdminSignup() {
                 {/* Header */}
                 <div className="text-center mb-8">
                     <h1 className="text-xl font-bold tracking-tight mb-2">
-                        <span className="text-emerald-400">Stock</span><span className="text-slate-100">Flow</span>
+                        <span className="text-emerald-400">Stock</span><span className="text-slate-100">Smart</span>
                     </h1>
                     <h2 className="text-2xl font-bold text-slate-100">Create Admin Account</h2>
                     <p className="text-sm text-slate-500 mt-1">Set up your store management</p>

@@ -39,21 +39,25 @@ export default function Products() {
     p.sku?.toLowerCase().includes(search.toLowerCase())
   )
 
-  const handleAddProduct = (e) => {
+  const handleAddProduct = async (e) => {
     e.preventDefault()
-    // API POST not available yet — will be added when product creation route exists
-    const product = {
-      _id: Date.now(),
-      name: newProduct.name,
-      category: newProduct.category,
-      stock: Number(newProduct.stock),
-      price: Number(newProduct.price),
-      sku: newProduct.sku,
-      lowStockThreshold: Number(newProduct.lowStockThreshold)
+    try {
+      const res = await api.post("/products", {
+        name: newProduct.name,
+        sku: newProduct.sku,
+        category: newProduct.category,
+        stock: Number(newProduct.stock),
+        price: Number(newProduct.price),
+        lowStockThreshold: Number(newProduct.lowStockThreshold)
+      })
+      setProducts([res.data, ...products])
+      setNewProduct({ name: "", category: "", stock: "", price: "", sku: "", lowStockThreshold: "5" })
+      setIsOpen(false)
+    } catch (err) {
+      console.error("Error adding product:", err)
+      const errMsg = err.response?.data?.message || "Failed to add product"
+      alert(errMsg)
     }
-    setProducts([product, ...products])
-    setNewProduct({ name: "", category: "", stock: "", price: "", sku: "", lowStockThreshold: "5" })
-    setIsOpen(false)
   }
 
   return (
@@ -135,8 +139,8 @@ export default function Products() {
                     <td className="px-6 py-4 text-right text-slate-300">₹{product.price}</td>
                     <td className="px-6 py-4 text-center">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isLow
-                          ? "bg-red-500/10 text-red-400"
-                          : "bg-emerald-500/10 text-emerald-400"
+                        ? "bg-red-500/10 text-red-400"
+                        : "bg-emerald-500/10 text-emerald-400"
                         }`}>
                         {isLow ? "Low Stock" : "In Stock"}
                       </span>

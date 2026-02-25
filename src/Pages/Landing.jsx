@@ -15,7 +15,7 @@ export default function Landing() {
       {/* Navbar */}
       <nav className="relative flex justify-between items-center px-8 md:px-16 py-6">
         <h1 className="text-xl font-bold tracking-tight">
-          <span className="text-emerald-400">Stock</span>Flow
+          <span className="text-emerald-400">Stock</span>Smart
         </h1>
 
         <Link

@@ -61,7 +61,7 @@ export default function AdminLayout() {
         {/* Brand */}
         <div className="px-6 py-6 border-b border-slate-800/50">
           <h2 className="text-xl font-bold tracking-tight">
-            <span className="text-emerald-400">Stock</span>Flow
+            <span className="text-emerald-400">Stock</span>Smart
           </h2>
           <p className="text-xs text-slate-500 mt-1">Inventory Management</p>
         </div>

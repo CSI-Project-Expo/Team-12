@@ -1,8 +1,8 @@
 import { Link, useNavigate } from "react-router-dom"
-import { Trash2 } from "lucide-react"
+import { Trash2, ArrowLeft } from "lucide-react"
 import { motion } from "framer-motion"
 
-export default function Cart({ cartItems, removeFromCart }) {
+export default function Cart({ cartItems, removeFromCart, shopName, shopId }) {
   const navigate = useNavigate()
 
   const totalAmount = cartItems.reduce(
@@ -14,7 +14,14 @@ export default function Cart({ cartItems, removeFromCart }) {
     <div className="min-h-screen bg-slate-950 p-8 md:p-10 space-y-8">
 
       <div>
+        <Link to={shopId ? `/shop/${shopId}` : "/shops"} className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-emerald-400 transition-colors mb-3">
+          <ArrowLeft size={14} />
+          {shopId ? "Back to Shop" : "Back to Shops"}
+        </Link>
         <h1 className="text-2xl font-bold text-slate-100">Your Cart</h1>
+        {shopName && (
+          <p className="text-sm text-emerald-400 mt-1">Shopping from: {shopName}</p>
+        )}
         <p className="text-sm text-slate-500 mt-1">{cartItems.length} item{cartItems.length !== 1 ? "s" : ""} in cart</p>
       </div>
 
@@ -26,12 +33,12 @@ export default function Cart({ cartItems, removeFromCart }) {
         >
           <div className="text-6xl mb-4">🛒</div>
           <h2 className="text-2xl font-semibold text-white">Your cart is empty</h2>
-          <p className="text-gray-400 mt-2">Add items from the shop to get started.</p>
+          <p className="text-gray-400 mt-2">Add items from a shop to get started.</p>
           <button
-            onClick={() => navigate('/shop')}
+            onClick={() => navigate('/shops')}
             className="mt-6 px-6 py-2 bg-white text-black rounded-lg hover:scale-105 transition-all font-medium"
           >
-            Continue Shopping
+            Browse Shops
           </button>
         </motion.div>
       ) : (
