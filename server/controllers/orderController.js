@@ -4,6 +4,7 @@ const Product = require('../models/Product');
 const Sale = require('../models/Sale');
 const Bill = require('../models/Bill');
 const AuditLog = require('../models/AuditLog');
+const { sendOrderConfirmationEmail } = require('../utils/emailService');
 
 // @desc    Create a new order (sale) with stock deduction + bill generation
 // @route   POST /api/orders
@@ -18,6 +19,7 @@ const createOrder = async (req, res) => {
     try {
         let totalAmount = 0;
         const saleItems = [];
+        const emailItems = [];
 
         // Validate stock and calculate totals
         for (const item of items) {
@@ -46,6 +48,12 @@ const createOrder = async (req, res) => {
                 productId: product._id,
                 quantity: item.quantity,
                 priceAtSale: product.price
+            });
+
+            emailItems.push({
+                name: product.name,
+                quantity: item.quantity,
+                price: product.price
             });
         }
 
@@ -88,6 +96,16 @@ const createOrder = async (req, res) => {
             status: sale.status,
             itemCount: saleItems.length,
             qrString: bill.qrString
+        });
+
+        // Send email silently in the background
+        const customerDetails = {
+            name: customerName || req.user.name,
+            email: customerEmail || req.user.email
+        };
+
+        sendOrderConfirmationEmail(customerDetails, sale._id.toString(), emailItems, totalAmount, qrString).catch(err => {
+            console.error('Unexpected error wrapping email service:', err);
         });
 
     } catch (error) {

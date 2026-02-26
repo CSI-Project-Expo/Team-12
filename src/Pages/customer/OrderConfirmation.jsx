@@ -125,7 +125,7 @@ export default function OrderConfirmation() {
         </div>
 
         <p className="text-xs text-slate-500 mt-6 pt-4 border-t border-slate-800/50">
-          A confirmation email will be sent shortly.
+          Your receipt has been sent to your email! (If you don't see it, please check your Spam/Junk folder and mark it as 'Not Spam')
         </p>
 
         <Link
