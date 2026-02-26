@@ -9,7 +9,15 @@ const startServer = async () => {
     try {
         await connectDB();
 
-        app.use(cors());
+        const corsOptions = {
+            origin: process.env.NODE_ENV === 'production'
+                ? [process.env.CORS_ORIGIN, process.env.CLIENT_URL].filter(Boolean)
+                : '*', // Allow all in development
+            credentials: true,
+            methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+            allowedHeaders: ['Content-Type', 'Authorization']
+        };
+        app.use(cors(corsOptions));
         app.use(express.json({ limit: '50mb' }));
         app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
@@ -21,6 +29,7 @@ const startServer = async () => {
         app.use('/api/bills', require('./routes/billRoutes'));
         app.use('/api/reports', require('./routes/reportsRoutes'));
         app.use('/api/audit-logs', require('./routes/auditLogRoutes'));
+        app.use('/api/chat', require('./routes/chatRoutes'));
 
         app.get('/', (req, res) => {
             res.send('Smart Inventory API is running...');

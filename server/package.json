@@ -5,9 +5,11 @@
     "scripts": {
         "start": "node index.js",
         "dev": "nodemon index.js",
+        "build": "echo \"Nothing to build for backend\"",
         "test": "node tests/run-all-tests.js"
     },
     "dependencies": {
+        "@google/generative-ai": "^0.24.1",
         "bcryptjs": "^3.0.3",
         "cors": "^2.8.6",
         "dotenv": "^17.2.3",

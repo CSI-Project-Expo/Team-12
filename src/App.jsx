@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route, useLocation } from "react-router-dom"
 import Landing from "./Pages/Landing"
 import Login from "./Pages/Login"
 import UserSignup from "./Pages/UserSignup"
@@ -24,8 +24,12 @@ import OrderConfirmation from "./Pages/customer/OrderConfirmation"
 
 import AdminLayout from "./Layouts/AdminLayout"
 import ProtectedRoute from "./components/ProtectedRoute"
+import ChatBot from "./components/ChatBot"
 
 function App() {
+  const location = useLocation()
+  const hideChatBotRoutes = ["/", "/login", "/signup/user", "/signup/admin"]
+  const showChatBot = !hideChatBotRoutes.includes(location.pathname)
 
   const [cartItems, setCartItems] = useState([])
   const [cartShopId, setCartShopId] = useState(null)
@@ -136,6 +140,7 @@ function App() {
 
   return (
     <>
+      {showChatBot && <ChatBot />}
       {cartExpired && (
         <div className="bg-red-500 text-white text-center py-2">
           Your cart has expired because it was not ordered on the same day.
