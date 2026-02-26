@@ -1,14 +1,15 @@
 import { useState, useRef } from "react"
-import { motion } from "framer-motion"
-import { ScanLine, CheckCircle, XCircle, Loader2, Search, ShoppingBag, Package, User, Calendar, IndianRupee, Upload } from "lucide-react"
-import { Html5Qrcode } from 'html5-qrcode';
+import { motion, AnimatePresence } from "framer-motion"
+import { ScanLine, CheckCircle, XCircle, Loader2, Search, ShoppingBag, Package, User, Calendar, IndianRupee, Upload, Camera } from "lucide-react"
 import api from "../../lib/api"
+import QRCodeScanner from "../../components/QRCodeScanner"
 
 export default function BillScanner() {
     const [qrInput, setQrInput] = useState("")
     const [loading, setLoading] = useState(false)
     const [result, setResult] = useState(null)
     const [error, setError] = useState("")
+    const [scannerMode, setScannerMode] = useState("upload") // "upload" or "camera"
     const fileInputRef = useRef(null)
 
     const handleVerifyStr = async (str) => {
@@ -45,6 +46,9 @@ export default function BillScanner() {
         setResult(null);
 
         try {
+            // Need dynamic import or use standard qr-scanner since html-qrcode is moved
+            // But actually we can just use the html5-qrcode class directly since we installed it
+            const { Html5Qrcode } = await import('html5-qrcode');
             const html5QrCode = new Html5Qrcode("reader");
             const decodedText = await html5QrCode.scanFile(file, true);
             setQrInput(decodedText);
@@ -93,27 +97,81 @@ export default function BillScanner() {
                             <p className="text-sm text-slate-500">Scan customer QR or enter code manually</p>
                         </div>
                     </div>
-                    <div>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            ref={fileInputRef}
-                            onChange={handleFileUpload}
-                            className="hidden"
-                            id="qr-upload"
-                        />
-                        <label
-                            htmlFor="qr-upload"
-                            className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-xl text-sm font-medium transition-colors cursor-pointer"
+                    <div className="flex bg-slate-800 p-1 rounded-xl">
+                        <button
+                            onClick={() => setScannerMode("camera")}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${scannerMode === "camera"
+                                    ? "bg-emerald-500 text-white shadow-sm"
+                                    : "text-slate-400 hover:text-slate-200"
+                                }`}
+                        >
+                            <Camera size={16} />
+                            Scan with Camera
+                        </button>
+                        <button
+                            onClick={() => setScannerMode("upload")}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${scannerMode === "upload"
+                                    ? "bg-slate-700 text-emerald-400 shadow-sm"
+                                    : "text-slate-400 hover:text-slate-200"
+                                }`}
                         >
                             <Upload size={16} />
                             Upload QR Image
-                        </label>
+                        </button>
                     </div>
                 </div>
 
-                {/* Hidden reader div required by html5-qrcode */}
+                <AnimatePresence mode="wait">
+                    {scannerMode === "camera" && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="mb-8 overflow-hidden"
+                        >
+                            <QRCodeScanner
+                                onScanSuccess={(decodedText) => {
+                                    setQrInput(decodedText);
+                                    handleVerifyStr(decodedText);
+                                }}
+                            />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* Hidden reader div required by html5-qrcode for file uploads */}
                 <div id="reader" style={{ display: 'none' }}></div>
+
+                <AnimatePresence mode="wait">
+                    {scannerMode === "upload" && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="flex justify-center mb-8 overflow-hidden"
+                        >
+                            <input
+                                type="file"
+                                accept="image/*"
+                                ref={fileInputRef}
+                                onChange={handleFileUpload}
+                                className="hidden"
+                                id="qr-upload"
+                            />
+                            <label
+                                htmlFor="qr-upload"
+                                className="flex flex-col items-center justify-center w-full max-w-sm h-48 border-2 border-dashed border-slate-700 hover:border-emerald-500/50 hover:bg-emerald-500/5 rounded-2xl cursor-pointer transition-colors"
+                            >
+                                <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center mb-4">
+                                    <Upload size={24} className="text-emerald-400" />
+                                </div>
+                                <p className="text-sm font-medium text-slate-200">Click to upload QR image</p>
+                                <p className="text-xs text-slate-500 mt-1">Supports PNG, JPG</p>
+                            </label>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
 
                 <div className="flex gap-3">
                     <input
@@ -134,125 +192,129 @@ export default function BillScanner() {
                     </button>
                 </div>
 
-                {error && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 5 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="mt-4 flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl text-sm"
-                    >
-                        <XCircle size={16} />
-                        {error}
-                    </motion.div>
-                )}
-            </motion.div>
+                {
+                    error && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mt-4 flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl text-sm"
+                        >
+                            <XCircle size={16} />
+                            {error}
+                        </motion.div>
+                    )
+                }
+            </motion.div >
 
             {/* Results */}
-            {result && result.verified && (
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="space-y-6"
-                >
-                    {/* Verified Badge */}
-                    <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-6 flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
-                            <CheckCircle size={24} className="text-emerald-400" />
-                        </div>
-                        <div>
-                            <h3 className="text-lg font-semibold text-emerald-400">Bill Verified ✓</h3>
-                            <p className="text-sm text-slate-400">This bill is authentic and matches our records</p>
-                        </div>
-                    </div>
-
-                    {/* Sale Details */}
-                    <div className="bg-slate-900 border border-slate-800/50 rounded-2xl p-6 space-y-6">
-                        <h3 className="text-base font-semibold text-slate-100 flex items-center gap-2">
-                            <ShoppingBag size={18} className="text-emerald-400" />
-                            Sale Details
-                        </h3>
-
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div className="bg-slate-800/50 border border-slate-700/50 p-4 rounded-xl">
-                                <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Order ID</p>
-                                <p className="text-sm font-mono text-slate-200 truncate">{result.sale.id}</p>
+            {
+                result && result.verified && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="space-y-6"
+                    >
+                        {/* Verified Badge */}
+                        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-6 flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                                <CheckCircle size={24} className="text-emerald-400" />
                             </div>
-                            <div className="bg-slate-800/50 border border-slate-700/50 p-4 rounded-xl">
-                                <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1">
-                                    <IndianRupee size={10} /> Total
-                                </p>
-                                <p className="text-sm font-semibold text-emerald-400">{formatCurrency(result.sale.totalAmount)}</p>
-                            </div>
-                            <div className="bg-slate-800/50 border border-slate-700/50 p-4 rounded-xl">
-                                <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1">
-                                    <Calendar size={10} /> Date
-                                </p>
-                                <p className="text-sm text-slate-200">{formatDate(result.sale.createdAt)}</p>
-                            </div>
-                            <div className="bg-slate-800/50 border border-slate-700/50 p-4 rounded-xl">
-                                <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Status</p>
-                                <span className={`text-xs font-medium px-2 py-1 rounded-full ${result.sale.status === "completed"
-                                    ? "bg-emerald-500/10 text-emerald-400"
-                                    : result.sale.status === "pending"
-                                        ? "bg-amber-500/10 text-amber-400"
-                                        : "bg-red-500/10 text-red-400"
-                                    }`}>
-                                    {result.sale.status}
-                                </span>
+                            <div>
+                                <h3 className="text-lg font-semibold text-emerald-400">Bill Verified ✓</h3>
+                                <p className="text-sm text-slate-400">This bill is authentic and matches our records</p>
                             </div>
                         </div>
 
-                        {result.sale.customer && (
-                            <div className="bg-slate-800/50 border border-slate-700/50 p-4 rounded-xl flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center">
-                                    <User size={14} className="text-indigo-400" />
+                        {/* Sale Details */}
+                        <div className="bg-slate-900 border border-slate-800/50 rounded-2xl p-6 space-y-6">
+                            <h3 className="text-base font-semibold text-slate-100 flex items-center gap-2">
+                                <ShoppingBag size={18} className="text-emerald-400" />
+                                Sale Details
+                            </h3>
+
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div className="bg-slate-800/50 border border-slate-700/50 p-4 rounded-xl">
+                                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Order ID</p>
+                                    <p className="text-sm font-mono text-slate-200 truncate">{result.sale.id}</p>
                                 </div>
-                                <div>
-                                    <p className="text-sm font-medium text-slate-200">{result.sale.customer.name}</p>
-                                    <p className="text-xs text-slate-500">{result.sale.customer.email}</p>
+                                <div className="bg-slate-800/50 border border-slate-700/50 p-4 rounded-xl">
+                                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                        <IndianRupee size={10} /> Total
+                                    </p>
+                                    <p className="text-sm font-semibold text-emerald-400">{formatCurrency(result.sale.totalAmount)}</p>
+                                </div>
+                                <div className="bg-slate-800/50 border border-slate-700/50 p-4 rounded-xl">
+                                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                        <Calendar size={10} /> Date
+                                    </p>
+                                    <p className="text-sm text-slate-200">{formatDate(result.sale.createdAt)}</p>
+                                </div>
+                                <div className="bg-slate-800/50 border border-slate-700/50 p-4 rounded-xl">
+                                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Status</p>
+                                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${result.sale.status === "completed"
+                                        ? "bg-emerald-500/10 text-emerald-400"
+                                        : result.sale.status === "pending"
+                                            ? "bg-amber-500/10 text-amber-400"
+                                            : "bg-red-500/10 text-red-400"
+                                        }`}>
+                                        {result.sale.status}
+                                    </span>
                                 </div>
                             </div>
-                        )}
 
-                        {/* Items Table */}
-                        <div>
-                            <h4 className="text-sm font-medium text-slate-300 mb-3 flex items-center gap-2">
-                                <Package size={14} /> Items ({result.sale.items.length})
-                            </h4>
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm">
-                                    <thead>
-                                        <tr className="border-b border-slate-700/50 text-xs text-slate-500 uppercase tracking-wider">
-                                            <th className="text-left py-3 px-3">Product</th>
-                                            <th className="text-left py-3 px-3">SKU</th>
-                                            <th className="text-right py-3 px-3">Qty</th>
-                                            <th className="text-right py-3 px-3">Price</th>
-                                            <th className="text-right py-3 px-3">Subtotal</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {result.sale.items.map((item, idx) => (
-                                            <tr key={idx} className="border-b border-slate-800/50">
-                                                <td className="py-3 px-3 text-slate-200">{item.productName}</td>
-                                                <td className="py-3 px-3 font-mono text-slate-500 text-xs">{item.sku}</td>
-                                                <td className="py-3 px-3 text-right text-slate-300">{item.quantity}</td>
-                                                <td className="py-3 px-3 text-right text-slate-400">{formatCurrency(item.priceAtSale)}</td>
-                                                <td className="py-3 px-3 text-right text-emerald-400 font-medium">{formatCurrency(item.subtotal)}</td>
+                            {result.sale.customer && (
+                                <div className="bg-slate-800/50 border border-slate-700/50 p-4 rounded-xl flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                                        <User size={14} className="text-indigo-400" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium text-slate-200">{result.sale.customer.name}</p>
+                                        <p className="text-xs text-slate-500">{result.sale.customer.email}</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Items Table */}
+                            <div>
+                                <h4 className="text-sm font-medium text-slate-300 mb-3 flex items-center gap-2">
+                                    <Package size={14} /> Items ({result.sale.items.length})
+                                </h4>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-sm">
+                                        <thead>
+                                            <tr className="border-b border-slate-700/50 text-xs text-slate-500 uppercase tracking-wider">
+                                                <th className="text-left py-3 px-3">Product</th>
+                                                <th className="text-left py-3 px-3">SKU</th>
+                                                <th className="text-right py-3 px-3">Qty</th>
+                                                <th className="text-right py-3 px-3">Price</th>
+                                                <th className="text-right py-3 px-3">Subtotal</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                    <tfoot>
-                                        <tr className="border-t border-slate-700">
-                                            <td colSpan={4} className="py-3 px-3 text-right text-sm font-semibold text-slate-300">Total</td>
-                                            <td className="py-3 px-3 text-right text-lg font-bold text-emerald-400">{formatCurrency(result.sale.totalAmount)}</td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            {result.sale.items.map((item, idx) => (
+                                                <tr key={idx} className="border-b border-slate-800/50">
+                                                    <td className="py-3 px-3 text-slate-200">{item.productName}</td>
+                                                    <td className="py-3 px-3 font-mono text-slate-500 text-xs">{item.sku}</td>
+                                                    <td className="py-3 px-3 text-right text-slate-300">{item.quantity}</td>
+                                                    <td className="py-3 px-3 text-right text-slate-400">{formatCurrency(item.priceAtSale)}</td>
+                                                    <td className="py-3 px-3 text-right text-emerald-400 font-medium">{formatCurrency(item.subtotal)}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                        <tfoot>
+                                            <tr className="border-t border-slate-700">
+                                                <td colSpan={4} className="py-3 px-3 text-right text-sm font-semibold text-slate-300">Total</td>
+                                                <td className="py-3 px-3 text-right text-lg font-bold text-emerald-400">{formatCurrency(result.sale.totalAmount)}</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </motion.div>
-            )}
-        </div>
+                    </motion.div>
+                )
+            }
+        </div >
     )
 }

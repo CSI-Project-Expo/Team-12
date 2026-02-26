@@ -753,24 +753,33 @@ Convert the application from a single-store demo into a multi-shop inventory man
 - Ensured Order ID matches real database `orderId`.
 - Implemented functional “Download Ticket” button.
 - Replaced live camera scanner with Upload QR Image feature.
-- Integrated `html5-qrcode` library for QR extraction.
+- Integrated `html5-qrcode` library for live camera QR extraction.
 - Successfully tested complete end-to-end QR verification workflow.
+
+#### 1.5 Chatbot Integration
+- AI chatbot feature fully implemented.
+- Powered by Google Gemini-2.5-flash AI model.
+- Connected to real-world store database for context-aware inventory queries.
+- Floating Chatbot UI integrated across the entire frontend (except on auth pages).
+#### 1.6 Live Camera QR Code Scanner
+- Created a new `QRCodeScanner.jsx` component using the `html5-qrcode` library.
+- Integrated webcam access to physically scan QR codes in real-time.
+- Styled the live scanner with an animated emerald scanning line to match the SaaS theme.
+- Configured proper memory management to stop camera streams and prevent memory leaks.
+- Added graceful error handling for missing camera hardware or denied permissions.
+
+#### 1.7 Verification Page UI Overhaul
+- Enhanced `BillScanner.jsx` with an elegant toggle switch.
+- Users can securely swap between "Scan with Camera" and "Upload QR Image" modes.
+- Both modes successfully connected directly into the `GET /api/bills/verify/` backend controller.
+
+#### 1.8 Architecture & Project Roadmap Update
+- Permanently removed Optical Character Recognition (OCR) from the software roadmap to focus on purely digital QR workflow.
+- Audited the codebase to confirm full completion of the Google Gemini AI Chatbot (`ChatBot` + `chatController`), updating project tracking accordingly.
 
 ### 2. Work Pending (What Is Left)
 
-#### 2.1 Chatbot Integration (Pending)
-- AI chatbot feature not implemented.
-- Planned for:
-  - Customer support
-  - Order tracking
-  - Inventory queries
-  - Smart assistance
-
-#### 2.2 OCR Feature
-- OCR functionality removed completely.
-- System now operates only with digital QR verification.
-
-#### 2.3 Frontend Automated Testing
+#### 2.1 Frontend Automated Testing
 - Backend testing completed.
 - UI automated testing (Cypress/Selenium) not implemented.
 - Only manual testing performed.
@@ -784,4 +793,5 @@ Convert the application from a single-store demo into a multi-shop inventory man
 ### Current Status
 - The backend is stable, secure, and production-ready at code level.
 - The QR verification system is fully functional.
-- Chatbot integration and cloud deployment are the next major steps.
+- The AI Chatbot is fully integrated.
+- Cloud deployment and automated UI testing are the next major steps.
