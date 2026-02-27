@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { Store, MapPin, User, ArrowRight, LogOut } from "lucide-react"
 import { motion } from "framer-motion"
 import api from "../../lib/api"
+import ThemeToggle from "../../components/ThemeToggle"
 
 export default function ShopsList() {
     const navigate = useNavigate()
@@ -39,21 +40,21 @@ export default function ShopsList() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-slate-950 p-8 md:p-10 space-y-8">
+            <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-8 md:p-10 space-y-8 transition-colors duration-300">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-100">Available Shops</h1>
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Available Shops</h1>
                     <p className="text-sm text-slate-500 mt-1">Browse stores and their inventory</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[1, 2, 3].map((i) => (
                         <div
                             key={i}
-                            className="bg-slate-900 border border-slate-800/50 p-6 rounded-2xl animate-pulse"
+                            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/50 p-6 rounded-2xl animate-pulse"
                         >
-                            <div className="h-5 bg-slate-800 rounded w-3/4 mb-4" />
-                            <div className="h-4 bg-slate-800 rounded w-1/2 mb-3" />
-                            <div className="h-4 bg-slate-800 rounded w-1/3 mb-6" />
-                            <div className="h-10 bg-slate-800 rounded-xl" />
+                            <div className="h-5 bg-slate-200 dark:bg-slate-800 rounded w-3/4 mb-4" />
+                            <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-1/2 mb-3" />
+                            <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-1/3 mb-6" />
+                            <div className="h-10 bg-slate-200 dark:bg-slate-800 rounded-xl" />
                         </div>
                     ))}
                 </div>
@@ -63,14 +64,14 @@ export default function ShopsList() {
 
     if (error) {
         return (
-            <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+            <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center transition-colors duration-300">
                 <div className="text-center">
                     <div className="text-5xl mb-4">⚠️</div>
-                    <h2 className="text-xl font-semibold text-slate-100 mb-2">Something went wrong</h2>
+                    <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-2">Something went wrong</h2>
                     <p className="text-slate-500 mb-6">{error}</p>
                     <button
                         onClick={() => window.location.reload()}
-                        className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-medium transition-all duration-200"
+                        className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-medium transition-all duration-200 shadow-sm shadow-emerald-500/20"
                     >
                         Try Again
                     </button>
@@ -80,20 +81,21 @@ export default function ShopsList() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-950 p-8 md:p-10 space-y-8">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-8 md:p-10 space-y-8 transition-colors duration-300">
 
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center flex-wrap gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-100">Available Shops</h1>
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Available Shops</h1>
                     <p className="text-sm text-slate-500 mt-1">Browse stores and their inventory</p>
                 </div>
                 <div className="flex items-center gap-4">
                     {user && (
-                        <span className="text-sm text-slate-400">Hi, {user.name}</span>
+                        <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Hi, {user.name}</span>
                     )}
+                    <ThemeToggle />
                     <button
                         onClick={handleLogout}
-                        className="flex items-center gap-2 text-sm text-slate-400 hover:text-red-400 border border-slate-700 hover:border-red-500/50 px-4 py-2 rounded-xl transition-all duration-200"
+                        className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 border border-slate-200 dark:border-slate-800 hover:border-red-200 dark:hover:border-red-500/50 bg-white dark:bg-transparent px-4 py-2 rounded-xl transition-all duration-200 shadow-sm dark:shadow-none"
                     >
                         <LogOut size={14} />
                         Logout
@@ -108,8 +110,8 @@ export default function ShopsList() {
                     className="flex flex-col items-center justify-center min-h-[60vh] text-center"
                 >
                     <div className="text-6xl mb-4">🏪</div>
-                    <h2 className="text-2xl font-semibold text-white">No shops available yet</h2>
-                    <p className="text-gray-400 mt-2">Check back later for new stores.</p>
+                    <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">No shops available yet</h2>
+                    <p className="text-slate-500 mt-2">Check back later for new stores.</p>
                 </motion.div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -119,28 +121,28 @@ export default function ShopsList() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3, delay: idx * 0.08 }}
-                            className="bg-slate-900 border border-slate-800/50 p-6 rounded-2xl space-y-4 hover:-translate-y-0.5 hover:shadow-xl transition-all duration-300"
+                            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/50 p-6 rounded-2xl space-y-4 hover:-translate-y-0.5 hover:shadow-xl transition-all duration-300 shadow-sm dark:shadow-none"
                         >
                             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                                <Store size={20} className="text-emerald-400" />
+                                <Store size={20} className="text-emerald-500 dark:text-emerald-400" />
                             </div>
 
-                            <h2 className="text-lg font-semibold text-slate-100">{shop.name}</h2>
+                            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{shop.name}</h2>
 
                             <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-sm text-slate-400">
-                                    <User size={14} className="text-slate-500" />
+                                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                                    <User size={14} className="text-slate-400 dark:text-slate-500" />
                                     <span>{shop.owner}</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-sm text-slate-400">
-                                    <MapPin size={14} className="text-slate-500" />
+                                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                                    <MapPin size={14} className="text-slate-400 dark:text-slate-500" />
                                     <span>{shop.location}</span>
                                 </div>
                             </div>
 
                             <Link
                                 to={`/shop/${shop._id}`}
-                                className="w-full flex items-center justify-center gap-2 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-medium transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-lg hover:shadow-emerald-500/25"
+                                className="w-full flex items-center justify-center gap-2 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-medium transition-all duration-300 hover:scale-[1.02] active:scale-95 shadow-sm shadow-emerald-500/20"
                             >
                                 View Inventory
                                 <ArrowRight size={14} />

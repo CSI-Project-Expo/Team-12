@@ -2,9 +2,11 @@ import { Link } from "react-router-dom"
 import { motion } from "framer-motion"
 import { ArrowRight, Package, Zap, Shield } from "lucide-react"
 
+import ThemeToggle from "../components/ThemeToggle"
+
 export default function Landing() {
   return (
-    <div className="relative min-h-screen bg-slate-950 text-slate-100 overflow-hidden">
+    <div className="relative min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 overflow-hidden transition-colors duration-300">
 
       {/* Background Glow Effects */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
@@ -15,10 +17,11 @@ export default function Landing() {
       {/* Navbar */}
       <nav className="relative flex justify-between items-center px-8 md:px-16 py-6">
         <h1 className="text-xl font-bold tracking-tight">
-          <span className="text-emerald-400">Stock</span>Smart
+          <span className="text-emerald-500 dark:text-emerald-400">Stock</span>Smart
         </h1>
 
-        <div className="flex gap-4">
+        <div className="flex items-center gap-4">
+          <ThemeToggle />
           <Link
             to="/login"
             className="px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-medium transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/25"
@@ -36,14 +39,14 @@ export default function Landing() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-8">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 mb-8 dark:shadow-none shadow-sm">
             <Zap size={12} className="mr-1.5" />
             Next-Gen Inventory Platform
           </span>
 
-          <h2 className="text-4xl md:text-6xl font-bold leading-tight max-w-4xl">
+          <h2 className="text-4xl md:text-6xl font-bold leading-tight max-w-4xl text-slate-900 dark:text-slate-100">
             Smart Inventory Management
-            <span className="block mt-3 bg-gradient-to-r from-emerald-400 to-emerald-300 bg-clip-text text-transparent">
+            <span className="block mt-3 bg-gradient-to-r from-emerald-600 to-emerald-400 dark:from-emerald-400 dark:to-emerald-300 bg-clip-text text-transparent">
               Designed for Modern Retail
             </span>
           </h2>
@@ -53,7 +56,7 @@ export default function Landing() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-8 text-base md:text-lg max-w-2xl text-slate-400 leading-relaxed"
+          className="mt-8 text-base md:text-lg max-w-2xl text-slate-600 dark:text-slate-400 leading-relaxed"
         >
           Manage stock effortlessly, prevent overselling in real-time, generate
           tamper-proof bills, and receive AI-driven stock recommendations
@@ -76,7 +79,7 @@ export default function Landing() {
 
           <Link
             to="/login"
-            className="px-7 py-3 border border-slate-700 text-slate-300 rounded-xl font-medium hover:bg-slate-800/50 hover:border-slate-600 transition-all duration-200 text-center"
+            className="px-7 py-3 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-xl font-medium hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:border-slate-400 dark:hover:border-slate-600 transition-all duration-200 text-center bg-white dark:bg-transparent shadow-sm dark:shadow-none"
           >
             Learn More
           </Link>
@@ -96,13 +99,13 @@ export default function Landing() {
         ].map((feature, idx) => (
           <div
             key={idx}
-            className="bg-slate-900 border border-slate-800/50 rounded-2xl p-6 hover:-translate-y-1 hover:shadow-xl transition-all duration-300"
+            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/50 rounded-2xl p-6 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] transition-all duration-300 shadow-sm"
           >
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-4">
-              <feature.icon size={20} className="text-emerald-400" />
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center mb-4">
+              <feature.icon size={20} className="text-emerald-600 dark:text-emerald-400" />
             </div>
-            <h3 className="text-base font-semibold text-slate-100 mb-2">{feature.title}</h3>
-            <p className="text-sm text-slate-500 leading-relaxed">{feature.desc}</p>
+            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-2">{feature.title}</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-500 leading-relaxed">{feature.desc}</p>
           </div>
         ))}
       </motion.section>

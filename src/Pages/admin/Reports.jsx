@@ -15,8 +15,8 @@ const COLORS = ["#10b981", "#f59e0b", "#ef4444", "#6366f1", "#8b5cf6", "#ec4899"
 const CustomTooltip = ({ active, payload, label }) => {
     if (!active || !payload?.length) return null
     return (
-        <div className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 shadow-xl">
-            <p className="text-xs text-slate-400 mb-1">{label}</p>
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 shadow-xl text-slate-800 dark:text-slate-200">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">{label}</p>
             {payload.map((entry, idx) => (
                 <p key={idx} className="text-sm font-medium" style={{ color: entry.color }}>
                     {entry.name}: {typeof entry.value === "number" && entry.name.toLowerCase().includes("revenue")
@@ -66,16 +66,16 @@ export default function Reports() {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-96">
-                <Loader2 size={32} className="text-emerald-400 animate-spin" />
+                <Loader2 size={32} className="text-emerald-500 dark:text-emerald-400 animate-spin" />
             </div>
         )
     }
 
     if (error) {
         return (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-6 text-center">
-                <AlertTriangle size={32} className="text-red-400 mx-auto mb-3" />
-                <p className="text-red-400 font-medium">{error}</p>
+            <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-2xl p-6 text-center shadow-sm dark:shadow-none">
+                <AlertTriangle size={32} className="text-red-500 dark:text-red-400 mx-auto mb-3" />
+                <p className="text-red-600 dark:text-red-400 font-medium">{error}</p>
                 <p className="text-slate-500 text-sm mt-1">Make sure the backend server is running.</p>
             </div>
         )
@@ -101,45 +101,45 @@ export default function Reports() {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-slate-900 border border-slate-800/50 rounded-2xl p-6"
+                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/50 rounded-2xl p-6 shadow-sm dark:shadow-none"
                 >
                     <div className="flex items-center gap-3 mb-3">
                         <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                            <IndianRupee size={18} className="text-emerald-400" />
+                            <IndianRupee size={18} className="text-emerald-500 dark:text-emerald-400" />
                         </div>
-                        <p className="text-sm text-slate-400">30-Day Revenue</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">30-Day Revenue</p>
                     </div>
-                    <p className="text-2xl font-bold text-slate-100">{formatCurrency(totalRevenue30d)}</p>
+                    <p className="text-2xl font-bold text-slate-800 dark:text-slate-100">{formatCurrency(totalRevenue30d)}</p>
                 </motion.div>
 
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="bg-slate-900 border border-slate-800/50 rounded-2xl p-6"
+                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/50 rounded-2xl p-6 shadow-sm dark:shadow-none"
                 >
                     <div className="flex items-center gap-3 mb-3">
                         <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center">
-                            <ShoppingCart size={18} className="text-indigo-400" />
+                            <ShoppingCart size={18} className="text-indigo-500 dark:text-indigo-400" />
                         </div>
-                        <p className="text-sm text-slate-400">30-Day Orders</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">30-Day Orders</p>
                     </div>
-                    <p className="text-2xl font-bold text-slate-100">{totalOrders30d}</p>
+                    <p className="text-2xl font-bold text-slate-800 dark:text-slate-100">{totalOrders30d}</p>
                 </motion.div>
 
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="bg-slate-900 border border-slate-800/50 rounded-2xl p-6"
+                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/50 rounded-2xl p-6 shadow-sm dark:shadow-none"
                 >
                     <div className="flex items-center gap-3 mb-3">
                         <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                            <Package size={18} className="text-amber-400" />
+                            <Package size={18} className="text-amber-500 dark:text-amber-400" />
                         </div>
-                        <p className="text-sm text-slate-400">Top Seller</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">Top Seller</p>
                     </div>
-                    <p className="text-2xl font-bold text-slate-100 truncate">
+                    <p className="text-2xl font-bold text-slate-800 dark:text-slate-100 truncate">
                         {topProducts.length > 0 ? topProducts[0].productName : "—"}
                     </p>
                 </motion.div>
@@ -150,11 +150,11 @@ export default function Reports() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="bg-slate-900 border border-slate-800/50 rounded-2xl p-6"
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/50 rounded-2xl p-6 shadow-sm dark:shadow-none"
             >
                 <div className="flex items-center gap-2 mb-6">
-                    <TrendingUp size={18} className="text-emerald-400" />
-                    <h2 className="text-base font-semibold text-slate-100">Daily Revenue (Last 30 Days)</h2>
+                    <TrendingUp size={18} className="text-emerald-500 dark:text-emerald-400" />
+                    <h2 className="text-base font-semibold text-slate-800 dark:text-slate-100">Daily Revenue (Last 30 Days)</h2>
                 </div>
                 <div className="h-72">
                     <ResponsiveContainer width="100%" height="100%">
@@ -165,9 +165,9 @@ export default function Reports() {
                                     <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                                 </linearGradient>
                             </defs>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                            <XAxis dataKey="label" tick={{ fill: "#64748b", fontSize: 11 }} tickLine={false} axisLine={{ stroke: "#334155" }} />
-                            <YAxis tick={{ fill: "#64748b", fontSize: 11 }} tickLine={false} axisLine={{ stroke: "#334155" }} tickFormatter={v => `₹${(v / 1000).toFixed(0)}k`} />
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.1)" className="dark:stroke-slate-800/50" />
+                            <XAxis dataKey="label" tick={{ fill: "#64748b", fontSize: 11 }} tickLine={false} axisLine={{ stroke: "#e2e8f0" }} className="dark:axisLine-slate-700" />
+                            <YAxis tick={{ fill: "#64748b", fontSize: 11 }} tickLine={false} axisLine={{ stroke: "#e2e8f0" }} className="dark:axisLine-slate-700" tickFormatter={v => `₹${(v / 1000).toFixed(0)}k`} />
                             <Tooltip content={<CustomTooltip />} />
                             <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#10b981" fill="url(#revenueGradient)" strokeWidth={2} />
                         </AreaChart>
@@ -183,18 +183,18 @@ export default function Reports() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
-                    className="bg-slate-900 border border-slate-800/50 rounded-2xl p-6"
+                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/50 rounded-2xl p-6 shadow-sm dark:shadow-none"
                 >
                     <div className="flex items-center gap-2 mb-6">
-                        <BarChart3 size={18} className="text-indigo-400" />
-                        <h2 className="text-base font-semibold text-slate-100">Monthly Revenue (12 Months)</h2>
+                        <BarChart3 size={18} className="text-indigo-500 dark:text-indigo-400" />
+                        <h2 className="text-base font-semibold text-slate-800 dark:text-slate-100">Monthly Revenue (12 Months)</h2>
                     </div>
                     <div className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={monthlyRevenue} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                                <XAxis dataKey="month" tick={{ fill: "#64748b", fontSize: 11 }} tickLine={false} axisLine={{ stroke: "#334155" }} />
-                                <YAxis tick={{ fill: "#64748b", fontSize: 11 }} tickLine={false} axisLine={{ stroke: "#334155" }} tickFormatter={v => `₹${(v / 1000).toFixed(0)}k`} />
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.1)" className="dark:stroke-slate-800/50" />
+                                <XAxis dataKey="month" tick={{ fill: "#64748b", fontSize: 11 }} tickLine={false} axisLine={{ stroke: "#e2e8f0" }} className="dark:axisLine-slate-700" />
+                                <YAxis tick={{ fill: "#64748b", fontSize: 11 }} tickLine={false} axisLine={{ stroke: "#e2e8f0" }} className="dark:axisLine-slate-700" tickFormatter={v => `₹${(v / 1000).toFixed(0)}k`} />
                                 <Tooltip content={<CustomTooltip />} />
                                 <Bar dataKey="revenue" name="Revenue" fill="#6366f1" radius={[4, 4, 0, 0]} />
                             </BarChart>
@@ -207,11 +207,11 @@ export default function Reports() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 }}
-                    className="bg-slate-900 border border-slate-800/50 rounded-2xl p-6"
+                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/50 rounded-2xl p-6 shadow-sm dark:shadow-none"
                 >
                     <div className="flex items-center gap-2 mb-6">
-                        <PieChart size={18} className="text-amber-400" />
-                        <h2 className="text-base font-semibold text-slate-100">Sales Breakdown</h2>
+                        <PieChart size={18} className="text-amber-500 dark:text-amber-400" />
+                        <h2 className="text-base font-semibold text-slate-800 dark:text-slate-100">Sales Breakdown</h2>
                     </div>
                     <div className="h-64">
                         {breakdownData.length > 0 ? (
@@ -232,11 +232,11 @@ export default function Reports() {
                                         ))}
                                     </Pie>
                                     <Tooltip formatter={(value, name) => [value, name]} />
-                                    <Legend wrapperStyle={{ color: "#94a3b8", fontSize: 12 }} />
+                                    <Legend wrapperStyle={{ color: "#64748b", fontSize: 12 }} className="dark:text-slate-400" />
                                 </RechartsPie>
                             </ResponsiveContainer>
                         ) : (
-                            <div className="h-full flex items-center justify-center text-slate-500 text-sm">
+                            <div className="h-full flex items-center justify-center text-slate-400 dark:text-slate-500 text-sm">
                                 No sales data available
                             </div>
                         )}
@@ -249,18 +249,18 @@ export default function Reports() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className="bg-slate-900 border border-slate-800/50 rounded-2xl p-6"
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/50 rounded-2xl p-6 shadow-sm dark:shadow-none"
             >
                 <div className="flex items-center gap-2 mb-6">
-                    <Package size={18} className="text-emerald-400" />
-                    <h2 className="text-base font-semibold text-slate-100">Top Selling Products (Last 30 Days)</h2>
+                    <Package size={18} className="text-emerald-500 dark:text-emerald-400" />
+                    <h2 className="text-base font-semibold text-slate-800 dark:text-slate-100">Top Selling Products (Last 30 Days)</h2>
                 </div>
 
                 {topProducts.length > 0 ? (
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                             <thead>
-                                <tr className="border-b border-slate-700/50 text-xs text-slate-500 uppercase tracking-wider">
+                                <tr className="border-b border-slate-200 dark:border-slate-700/50 text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider bg-slate-50 dark:bg-transparent">
                                     <th className="text-left py-3 px-3">#</th>
                                     <th className="text-left py-3 px-3">Product</th>
                                     <th className="text-left py-3 px-3">SKU</th>
@@ -269,30 +269,30 @@ export default function Reports() {
                                     <th className="text-right py-3 px-3">Revenue</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="divide-y divide-slate-200 dark:divide-slate-800/30">
                                 {topProducts.map((product, idx) => (
-                                    <tr key={idx} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+                                    <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
                                         <td className="py-3 px-3">
-                                            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${idx === 0 ? "bg-amber-500/20 text-amber-400" :
-                                                    idx === 1 ? "bg-slate-400/20 text-slate-300" :
-                                                        idx === 2 ? "bg-orange-500/20 text-orange-400" :
-                                                            "bg-slate-700/50 text-slate-500"
+                                            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${idx === 0 ? "bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400" :
+                                                idx === 1 ? "bg-slate-200 text-slate-600 dark:bg-slate-400/20 dark:text-slate-300" :
+                                                    idx === 2 ? "bg-orange-500/10 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400" :
+                                                        "bg-slate-100 text-slate-500 dark:bg-slate-700/50 dark:text-slate-500"
                                                 }`}>
                                                 {idx + 1}
                                             </span>
                                         </td>
-                                        <td className="py-3 px-3 text-slate-200 font-medium">{product.productName}</td>
-                                        <td className="py-3 px-3 font-mono text-slate-500 text-xs">{product.sku}</td>
-                                        <td className="py-3 px-3 text-right text-slate-300">{product.totalQuantity}</td>
-                                        <td className="py-3 px-3 text-right text-slate-400">{product.orderCount}</td>
-                                        <td className="py-3 px-3 text-right text-emerald-400 font-medium">{formatCurrency(product.totalRevenue)}</td>
+                                        <td className="py-3 px-3 text-slate-700 dark:text-slate-200 font-medium">{product.productName}</td>
+                                        <td className="py-3 px-3 font-mono text-slate-500 dark:text-slate-400 text-xs">{product.sku}</td>
+                                        <td className="py-3 px-3 text-right text-slate-600 dark:text-slate-300">{product.totalQuantity}</td>
+                                        <td className="py-3 px-3 text-right text-slate-500 dark:text-slate-400">{product.orderCount}</td>
+                                        <td className="py-3 px-3 text-right text-emerald-600 dark:text-emerald-400 font-medium">{formatCurrency(product.totalRevenue)}</td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
                 ) : (
-                    <div className="h-32 flex items-center justify-center text-slate-500 text-sm">
+                    <div className="h-32 flex items-center justify-center text-slate-400 dark:text-slate-500 text-sm">
                         No sales data available for the last 30 days
                     </div>
                 )}

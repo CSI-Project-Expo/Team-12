@@ -73,14 +73,14 @@ const ChatBot = () => {
                         className="fixed bottom-6 right-6 w-[350px] sm:w-[400px] h-[550px] max-h-[85vh] glass-card flex flex-col z-50 overflow-hidden shadow-card-hover"
                     >
                         {/* Header */}
-                        <div className="bg-slate-800/80 backdrop-blur border-b border-slate-700 text-brand-400 p-4 flex justify-between items-center z-10">
+                        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur border-b border-slate-200 dark:border-slate-700 text-brand-600 dark:text-brand-400 p-4 flex justify-between items-center z-10">
                             <div className="flex items-center gap-2">
                                 <Bot size={24} className="text-brand-500" />
-                                <h3 className="font-semibold text-lg text-slate-100">Smart Assistant</h3>
+                                <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100">Smart Assistant</h3>
                             </div>
                             <button
                                 onClick={() => setIsOpen(false)}
-                                className="text-slate-400 hover:text-white transition-colors"
+                                className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors"
                             >
                                 <X size={24} />
                             </button>
@@ -93,13 +93,13 @@ const ChatBot = () => {
                                     key={index}
                                     className={`flex gap-2 max-w-[85%] ${msg.role === 'user' ? 'ml-auto flex-row-reverse' : ''}`}
                                 >
-                                    <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center shadow-sm ${msg.role === 'user' ? 'bg-brand-500/20 text-brand-400' : 'bg-slate-800 text-brand-500 border border-slate-700'}`}>
+                                    <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center shadow-sm ${msg.role === 'user' ? 'bg-brand-50 dark:bg-brand-500/20 text-brand-600 dark:text-brand-400' : 'bg-slate-100 dark:bg-slate-800 text-brand-600 dark:text-brand-500 border border-slate-200 dark:border-slate-700'}`}>
                                         {msg.role === 'user' ? <User size={16} /> : <Bot size={16} />}
                                     </div>
                                     <div
                                         className={`p-3 rounded-2xl text-sm ${msg.role === 'user'
-                                            ? 'bg-brand-600 text-white rounded-tr-none shadow-md'
-                                            : 'bg-slate-800 text-slate-200 shadow-md border border-slate-700 rounded-tl-none'
+                                            ? 'bg-brand-500 dark:bg-brand-600 text-white rounded-tr-none shadow-md'
+                                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-md border border-slate-200 dark:border-slate-700 rounded-tl-none'
                                             }`}
                                     >
                                         <div className="whitespace-pre-wrap leading-relaxed">{msg.text}</div>
@@ -108,10 +108,10 @@ const ChatBot = () => {
                             ))}
                             {isLoading && (
                                 <div className="flex gap-2 max-w-[85%]">
-                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-slate-800 text-brand-500 border border-slate-700 flex items-center justify-center shadow-sm">
+                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-brand-600 dark:text-brand-500 border border-slate-200 dark:border-slate-700 flex items-center justify-center shadow-sm">
                                         <Bot size={16} />
                                     </div>
-                                    <div className="p-4 bg-slate-800 text-slate-200 shadow-md border border-slate-700 rounded-2xl rounded-tl-none flex items-center gap-1.5 h-[44px]">
+                                    <div className="p-4 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-md border border-slate-200 dark:border-slate-700 rounded-2xl rounded-tl-none flex items-center gap-1.5 h-[44px]">
                                         <div className="w-1.5 h-1.5 bg-brand-400 rounded-full animate-bounce"></div>
                                         <div className="w-1.5 h-1.5 bg-brand-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                                         <div className="w-1.5 h-1.5 bg-brand-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
@@ -122,13 +122,13 @@ const ChatBot = () => {
                         </div>
 
                         {/* Input Area */}
-                        <form onSubmit={handleSend} className="p-3 bg-slate-900/90 border-t border-slate-800 flex items-center gap-2">
+                        <form onSubmit={handleSend} className="p-3 bg-slate-50/90 dark:bg-slate-900/90 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2">
                             <input
                                 type="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 placeholder="Type your message..."
-                                className="flex-1 px-4 py-2.5 bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-400 rounded-full focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500 transition-all"
+                                className="flex-1 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 rounded-full focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500 transition-all shadow-inner dark:shadow-none"
                                 disabled={isLoading}
                             />
                             <button

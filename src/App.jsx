@@ -139,10 +139,10 @@ function App() {
   }
 
   return (
-    <>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
       {showChatBot && <ChatBot />}
       {cartExpired && (
-        <div className="bg-red-500 text-white text-center py-2">
+        <div className="bg-red-500 text-white text-center py-2 px-4 text-sm font-medium z-[100] relative">
           Your cart has expired because it was not ordered on the same day.
         </div>
       )}
@@ -209,7 +209,7 @@ function App() {
         <Route path="/order-confirmation" element={<ProtectedRoute allowedRoles={['user']}><OrderConfirmation /></ProtectedRoute>} />
 
       </Routes>
-    </>
+    </div>
   )
 }
 
