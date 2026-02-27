@@ -1,21 +1,13 @@
 const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
 
 // Suppress Mongoose strictQuery deprecation warning
 mongoose.set('strictQuery', true);
 
 const connectDB = async (retries = 3) => {
-    let mongoUri = process.env.MONGO_URI;
-
-    // Use in-memory DB for development if no MONGO_URI is provided
-    if ((!mongoUri || mongoUri.trim() === '') && process.env.NODE_ENV === 'development') {
-        console.log('No MONGO_URI found — using MongoDB Memory Server for development...');
-        const mongoServer = await MongoMemoryServer.create();
-        mongoUri = mongoServer.getUri();
-    }
+    const mongoUri = process.env.MONGO_URI;
 
     if (!mongoUri || mongoUri.trim() === '') {
-        console.error('ERROR: MONGO_URI is not defined. Set it in your .env file.');
+        console.error('ERROR: MONGO_URI is not defined.');
         process.exit(1);
     }
 
@@ -30,7 +22,6 @@ const connectDB = async (retries = 3) => {
                 console.error('All connection attempts exhausted. Exiting.');
                 process.exit(1);
             }
-            // Wait before retrying (1s, 2s, 3s...)
             await new Promise(resolve => setTimeout(resolve, attempt * 1000));
         }
     }
