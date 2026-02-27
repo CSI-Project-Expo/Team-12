@@ -160,7 +160,14 @@ Traditional inventory management apps suffer from fundamental architectural limi
 ### Prerequisites
 - Modern web browser (Chrome, Firefox, Safari, Edge)
 - Internet connection
-- That's it! No installation required.
+- Node.js installed on your machine
+
+### Environment Setup
+Before running the application, you must configure your environment variables:
+1. Navigate to the `server/` directory.
+2. Duplicate the `server/.env.example` file and rename it to `.env`.
+3. Open the new `.env` file and fill in your actual credentials (MongoDB URI, Email User/Pass, Gemini API Key, etc.).
+**Note:** The application (specifically features like emails and AI chat) will fail to run or operate correctly if these variables are missing.
 
 ### Access
 Simply navigate to the application URL in your browser and log in. Your inventory management system is ready to use.
