@@ -15,6 +15,9 @@ dist-ssr
 # Environment Variables
 .env
 server/.env
+server/.env.production
+*.env*  # (Optional: This is a safer catch-all that ignores any file with .env in the name)
+
 
 # Editor directories and files
 .vscode/*
