@@ -9,15 +9,22 @@ const startServer = async () => {
     try {
         await connectDB();
 
-        const corsOptions = {
-            origin: process.env.NODE_ENV === 'production'
-                ? [process.env.CORS_ORIGIN, process.env.CLIENT_URL].filter(Boolean)
-                : '*', // Allow all in development
-            credentials: true,
-            methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-            allowedHeaders: ['Content-Type', 'Authorization']
-        };
-        app.use(cors(corsOptions));
+        // ✅ Fixed CORS configuration (allows all Vercel deployments)
+        app.use(cors({
+            origin: function (origin, callback) {
+                // Allow requests with no origin (Postman, curl, etc.)
+                if (!origin) return callback(null, true);
+
+                // Allow any Vercel deployment
+                if (origin.includes("vercel.app")) {
+                    return callback(null, true);
+                }
+
+                return callback(new Error("Not allowed by CORS"));
+            },
+            credentials: true
+        }));
+
         app.use(express.json({ limit: '50mb' }));
         app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
@@ -35,13 +42,11 @@ const startServer = async () => {
             res.send('Smart Inventory API is running...');
         });
 
-        // Global error handler — catches any unhandled errors from controllers
+        // Global error handler
         app.use((err, req, res, next) => {
             console.error('Unhandled Error:', err.stack || err.message);
-            const statusCode = res.statusCode !== 200 ? res.statusCode : 500;
-            res.status(statusCode).json({
-                message: err.message || 'Internal Server Error',
-                ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+            res.status(500).json({
+                message: err.message || 'Internal Server Error'
             });
         });
 
@@ -50,6 +55,7 @@ const startServer = async () => {
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);
         });
+
     } catch (error) {
         console.error('Failed to start server:', error);
         process.exit(1);
@@ -59,7 +65,6 @@ const startServer = async () => {
 // Catch unhandled promise rejections
 process.on('unhandledRejection', (err) => {
     console.error('Unhandled Promise Rejection:', err.message || err);
-    // Don't exit — just log. Let the global error handler deal with route-level errors.
 });
 
 startServer();
