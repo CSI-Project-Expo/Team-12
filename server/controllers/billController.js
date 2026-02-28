@@ -2,21 +2,56 @@ const Bill = require('../models/Bill');
 const Sale = require('../models/Sale');
 const Product = require('../models/Product');
 const User = require('../models/User');
+const crypto = require('crypto');
+
+// @desc    Create a new bill and generate unique QR string
+// @route   POST /api/bills
+// @access  Private (admin)
+const createBill = async (req, res) => {
+    try {
+        const { saleId } = req.body;
+
+        if (!saleId) {
+            return res.status(400).json({ success: false, message: 'Sale ID is required' });
+        }
+
+        // Generate a proper unique QR string
+        const qrString = crypto.randomBytes(16).toString('hex') + '-' + saleId.toString();
+
+        const newBill = new Bill({
+            saleId,
+            qrString,
+            emailSent: false
+        });
+
+        // Make sure await newBill.save() is called BEFORE sending response
+        await newBill.save();
+
+        res.status(201).json({
+            success: true,
+            message: 'Bill created successfully',
+            bill: newBill
+        });
+    } catch (error) {
+        console.error('Bill creation error:', error.message);
+        res.status(500).json({ success: false, message: 'Failed to create bill' });
+    }
+};
 
 // @desc    Verify a bill by its QR string
-// @route   GET /api/bills/verify/:qrString
+// @route   GET /api/bills/verify/:code
 // @access  Private (admin)
 // SAFETY: Read-only
 const verifyBill = async (req, res) => {
     try {
-        const { qrString } = req.params;
+        const { code } = req.params;
 
-        if (!qrString) {
+        if (!code) {
             return res.status(400).json({ success: false, message: 'QR string is required' });
         }
 
-        // Find the bill by QR string
-        const bill = await Bill.findOne({ qrString });
+        // Use: const bill = await Bill.findOne({ qrString: req.params.code });
+        const bill = await Bill.findOne({ qrString: code });
 
         if (!bill) {
             return res.status(404).json({ success: false, message: 'Bill not found. Invalid QR code.' });
@@ -69,4 +104,4 @@ const verifyBill = async (req, res) => {
     }
 };
 
-module.exports = { verifyBill };
+module.exports = { createBill, verifyBill };

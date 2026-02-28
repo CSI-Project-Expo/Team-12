@@ -10,8 +10,7 @@ const billSchema = new mongoose.Schema({
     qrString: {
         type: String,
         required: true,
-        unique: true,
-        index: true
+        unique: true
     },
     emailSent: {
         type: Boolean,
@@ -20,9 +19,6 @@ const billSchema = new mongoose.Schema({
 }, {
     timestamps: true
 });
-
-billSchema.index({ qrString: 1 }, { unique: true });
-billSchema.index({ saleId: 1 });
 
 const Bill = mongoose.model('Bill', billSchema);
 module.exports = Bill;

@@ -84,11 +84,14 @@ const createOrder = async (req, res) => {
 
         // Generate a bill with unique QR string for verification
         const qrString = crypto.randomBytes(16).toString('hex') + '-' + sale._id.toString();
-        const bill = await Bill.create({
+        const bill = new Bill({
             saleId: sale._id,
             qrString,
             emailSent: false
         });
+
+        // Save it inside the bill document as qrString
+        await bill.save();
 
         res.status(201).json({
             orderId: sale._id,
