@@ -44,21 +44,32 @@ const createBill = async (req, res) => {
 const verifyBill = async (req, res) => {
     try {
         const { code } = req.params;
+        console.log('--- verifyBill INVOKED ---');
+        console.log('Verification code:', code);
 
         if (!code) {
             return res.status(400).json({ success: false, message: 'QR string is required' });
         }
 
         const parts = code.split('-');
+        console.log('Code parts:', parts);
+
         if (parts.length !== 3) {
+            console.warn('Invalid code format. Expected 3 parts, got:', parts.length);
             return res.status(404).json({ success: false, message: 'Invalid QR code format.' });
         }
 
         const shopId = parts[0];
+        console.log('Target Shop ID parsed:', shopId);
 
         // Dynamically connect to the shop's tenant DB based on the parsed shopId
         const getTenantConnection = require('../utils/tenantConnection');
         const shopTenantDb = getTenantConnection(shopId);
+
+        if (!shopTenantDb) {
+            console.error('Failed to get tenant connection for shopId:', shopId);
+            return res.status(500).json({ success: false, message: 'Internal Server Error: Database connection failed.' });
+        }
 
         const ShopBill = shopTenantDb.model('Bill');
         const ShopSale = shopTenantDb.model('Sale');
@@ -67,6 +78,7 @@ const verifyBill = async (req, res) => {
 
         // Use: const bill = await Bill.findOne({ qrString: req.params.code });
         const bill = await ShopBill.findOne({ qrString: code });
+        console.log('Bill lookup result:', bill ? 'FOUND' : 'NOT FOUND');
 
         if (!bill) {
             return res.status(404).json({ success: false, message: 'Bill not found. Invalid QR code.' });
@@ -74,6 +86,7 @@ const verifyBill = async (req, res) => {
 
         // Get the associated sale with populated customer details
         const sale = await ShopSale.findById(bill.saleId).populate({ path: 'customerId', model: User, select: 'name email' });
+        console.log('Sale lookup result:', sale ? 'FOUND' : 'NOT FOUND');
 
         if (!sale) {
             return res.status(404).json({ success: false, message: 'Sale record not found for this bill.' });

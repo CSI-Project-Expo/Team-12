@@ -4,29 +4,22 @@ const { Resend } = require('resend');
 /**
  * Sends an order confirmation email to the user with an embedded QR code.
  * Fails silently so it does not block the main application flow.
- *
- * @param {Object} user - The authenticated user object (from req.user)
- * @param {String} orderId - The created sale/order ID
- * @param {Array} items - Array of items with { name, quantity, price }
- * @param {Number} totalAmount - Total amount for the order
- * @param {String} qrString - The unique QR string generated for the bill
  */
 const sendOrderConfirmationEmail = async (user, orderId, items, totalAmount, qrString) => {
     console.log('--- sendOrderConfirmationEmail INVOKED ---');
     console.log('user:', user.email, 'orderId:', orderId);
     try {
-        if (!process.env.RESEND_API_KEY) {
-            console.log('RESEND_API_KEY not found in .env. Skipping email sending.');
+        const resendApiKey = process.env.RESEND_API_KEY;
+        const useResend = resendApiKey && resendApiKey !== 're_your_api_key_here';
+        const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+
+        if (!useResend && (!process.env.EMAIL_USER || !process.env.EMAIL_PASS)) {
+            console.log('No email service configured (Resend or Gmail). Skipping email sending.');
             return;
         }
 
-        const resend = new Resend(process.env.RESEND_API_KEY);
-        const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
-
-        console.log('Using Resend from email:', fromEmail);
-
-        // Generate QR code as Base64 image Buffer for Resend
-        const qrImageBuffer = await qrcode.toBuffer(qrString, {
+        // Generate QR code as Base64 image
+        const qrImageBase64 = await qrcode.toDataURL(qrString, {
             errorCorrectionLevel: 'M',
             margin: 4,
             width: 300,
@@ -50,7 +43,6 @@ const sendOrderConfirmationEmail = async (user, orderId, items, totalAmount, qrS
         `;
 
         items.forEach(item => {
-            // Ensuring we output 2 decimals if price exists
             const priceFormatted = Number(item.price).toFixed(2);
             itemsHtml += `
                     <tr>
@@ -72,61 +64,87 @@ const sendOrderConfirmationEmail = async (user, orderId, items, totalAmount, qrS
             </table>
         `;
 
-        const mailOptions = {
-            from: `"Smart Inventory" <${fromEmail}>`,
-            to: user.email,
-            subject: `Order Confirmation - #${orderId}`,
-            html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-                    <h2>Hello ${user.name || 'Customer'},</h2>
-                    <p>Thank you for your purchase! We are pleased to confirm that your order has been placed successfully.</p>
-                    
-                    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                        <h3 style="margin-top: 0; color: #0056b3;">Order ID: ${orderId}</h3>
-                        <p style="margin: 0; color: #666;">Placed on: ${new Date().toLocaleString()}</p>
-                    </div>
-
-                    <h3>Order Summary</h3>
-                    ${itemsHtml}
-
-                    <div style="text-align: center; margin-top: 30px;">
-                        <h3>Your Order QR Code</h3>
-                        <p style="color: #666; font-size: 14px;">Show this QR code at the store for quick verification.</p>
-                        <!-- For Resend inline image compatibility -->
-                        <img src="cid:qrcode" alt="Order QR Code" style="max-width: 200px; border: 1px solid #ddd; padding: 10px; border-radius: 5px;" />
-                        <br/>
-                        <p style="color: #999; font-size: 12px; margin-top: 10px;">(If the QR code does not display, please see the attachment)</p>
-                    </div>
-
-                    <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;" />
-                    
-                    <div style="text-align: center; color: #888; font-size: 12px;">
-                        <p>If you have any questions, please contact our support team at support@smartinventory.com.</p>
-                        <p>&copy; ${new Date().getFullYear()} Smart Inventory. All rights reserved.</p>
-                    </div>
+        const emailHtml = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333 text-align: left;">
+                <h2 style="color: #059669;">Hello ${user.name || 'Customer'},</h2>
+                <p>Thank you for your purchase! We are pleased to confirm that your order has been placed successfully.</p>
+                
+                <div style="background-color: #f0fdf4; padding: 15px; border-radius: 12px; border: 1px solid #dcfce7; margin: 20px 0;">
+                    <h3 style="margin-top: 0; color: #166534;">Order ID: ${orderId}</h3>
+                    <p style="margin: 0; color: #166534; font-size: 14px;">Placed on: ${new Date().toLocaleString()}</p>
                 </div>
-            `,
-            attachments: [
-                {
-                    filename: 'qrcode.png',
-                    content: qrImageBuffer,
-                    // Optional content_id for CID embedding support
-                    content_id: 'qrcode'
-                }
-            ]
-        };
 
-        const { data, error } = await resend.emails.send(mailOptions);
+                <h3 style="border-bottom: 2px solid #f1f5f9; padding-bottom: 8px;">Order Summary</h3>
+                ${itemsHtml}
 
-        if (error) {
-            console.error('Error sending order confirmation email via Resend:', error.message);
+                <div style="text-align: center; margin-top: 30px; padding: 20px; background-color: #f8f9fa; border-radius: 12px;">
+                    <h3 style="margin-top: 0;">Your Order QR Code</h3>
+                    <p style="color: #64748b; font-size: 14px;">Show this QR code at the store for quick verification.</p>
+                    <img src="cid:qrcode" alt="Order QR Code" style="max-width: 200px; border: 2px solid #e2e8f0; padding: 10px; border-radius: 12px; background: white;" />
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 30px 0;" />
+                
+                <div style="text-align: center; color: #94a3b8; font-size: 12px;">
+                    <p>If you have any questions, please contact our support team at support@smartinventory.com.</p>
+                    <p>&copy; ${new Date().getFullYear()} Smart Inventory. All rights reserved.</p>
+                </div>
+            </div>
+        `;
+
+        if (useResend) {
+            console.log('Using Resend service...');
+            const resend = new Resend(resendApiKey);
+            const { data, error } = await resend.emails.send({
+                from: `Smart Inventory <${fromEmail}>`,
+                to: [user.email],
+                subject: `Order Confirmation - #${orderId}`,
+                html: emailHtml,
+                attachments: [
+                    {
+                        filename: 'qrcode.png',
+                        content: qrImageBase64.split("base64,")[1],
+                        cid: 'qrcode'
+                    }
+                ]
+            });
+
+            if (error) {
+                console.error('Resend Error:', error);
+            } else {
+                console.log('Order confirmation email sent via Resend:', data.id);
+            }
         } else {
-            console.log(`Order confirmation email sent to ${user.email}, id: ${data?.id}`);
+            console.log('Using Nodemailer fallback (Gmail)...');
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS
+                }
+            });
+
+            const mailOptions = {
+                from: `"Smart Inventory" <${process.env.EMAIL_USER}>`,
+                to: user.email,
+                subject: `Order Confirmation - #${orderId}`,
+                html: emailHtml,
+                attachments: [
+                    {
+                        filename: 'qrcode.png',
+                        content: qrImageBase64.split("base64,")[1],
+                        encoding: 'base64',
+                        cid: 'qrcode'
+                    }
+                ]
+            };
+
+            await transporter.sendMail(mailOptions);
+            console.log(`Order confirmation email sent to ${user.email} via Gmail`);
         }
 
     } catch (error) {
-        console.error('Exception while sending order confirmation email:', error.message);
-        // Do not rethrow the error to prevent blocking the order process
+        console.error('Error sending order confirmation email:', error.message);
     }
 };
 
