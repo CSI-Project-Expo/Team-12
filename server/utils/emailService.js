@@ -32,8 +32,9 @@ const sendOrderConfirmationEmail = async (user, orderId, items, totalAmount, qrS
 
         // Generate QR code as Base64 image
         const qrImageBase64 = await qrcode.toDataURL(qrString, {
-            errorCorrectionLevel: 'H',
-            margin: 2,
+            errorCorrectionLevel: 'M',
+            margin: 4,
+            width: 300,
             color: {
                 dark: '#000000',
                 light: '#ffffff'

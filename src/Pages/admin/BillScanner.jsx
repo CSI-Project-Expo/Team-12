@@ -50,7 +50,9 @@ export default function BillScanner() {
             // But actually we can just use the html5-qrcode class directly since we installed it
             const { Html5Qrcode } = await import('html5-qrcode');
             const html5QrCode = new Html5Qrcode("reader");
-            const decodedText = await html5QrCode.scanFile(file, true);
+
+            // true ignores accuracy, pass false to enforce accurate reading over speed
+            const decodedText = await html5QrCode.scanFile(file, false);
             setQrInput(decodedText);
 
             // clear the instance memory
@@ -60,7 +62,7 @@ export default function BillScanner() {
             handleVerifyStr(decodedText);
         } catch (err) {
             console.error("QR Scan Error:", err);
-            setError("Could not find or read a QR code in the uploaded image.");
+            setError("Could not find or read a QR code in the uploaded image. Please ensure the image is clear.");
         } finally {
             setLoading(false);
             if (fileInputRef.current) {
