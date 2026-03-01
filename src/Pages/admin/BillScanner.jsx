@@ -47,6 +47,7 @@ export default function BillScanner() {
         setLoading(true);
         setError("");
         setResult(null);
+        setRawResult("");
 
         // Preview
         const reader = new FileReader();
@@ -54,33 +55,51 @@ export default function BillScanner() {
         reader.readAsDataURL(file);
 
         console.log("--- QR File Upload Started ---");
-        console.log("File Name:", file.name);
-        console.log("File Type:", file.type);
-        console.log("File Size:", (file.size / 1024).toFixed(2), "KB");
 
         try {
+            // 1. Try qr-scanner first
+            console.log("Method 1: Attempting scan with 'qr-scanner'...");
             const QrScanner = (await import('qr-scanner')).default;
 
-            console.log("Attempting scan with 'qr-scanner'...");
-            const result = await QrScanner.scanImage(file, { returnDetails: true });
+            // Sometimes qr-scanner 1.4.x needs a worker path or it fails in certain Vite environments
+            // We'll try it and catch the error
+            const decodedText = await QrScanner.scanImage(file);
 
-            const decodedText = result.data;
-            console.log("QR Code Decoded Successfully:", decodedText);
+            console.log("QR Code Decoded (qr-scanner):", decodedText);
             setQrInput(decodedText);
-
-            // Success! Verify
             handleVerifyStr(decodedText);
-        } catch (err) {
-            console.error("QR Scan Error:", err);
+        } catch (qrScannerErr) {
+            console.warn("qr-scanner failed:", qrScannerErr);
 
-            let errorMessage = "Could not find or read a QR code. Please ensure the image is clear and the QR code is not distorted.";
-            if (err === "No QR code found") {
-                errorMessage = "No QR code detected. Try a higher quality photo or use the camera.";
-            } else if (typeof err === 'string' && err.includes("Scanner error")) {
-                errorMessage = err;
+            try {
+                // 2. Fallback to html5-qrcode scanFile
+                console.log("Method 2: Attempting fallback with 'html5-qrcode'...");
+                const { Html5Qrcode } = await import('html5-qrcode');
+
+                // We need a temporary Html5Qrcode instance
+                const html5QrCode = new Html5Qrcode("reader");
+                const decodedText = await html5QrCode.scanFile(file, false);
+
+                console.log("QR Code Decoded (html5-qrcode):", decodedText);
+                setQrInput(decodedText);
+                handleVerifyStr(decodedText);
+
+                // Clean up instance if it has any internal state
+                try { await html5QrCode.clear(); } catch (e) { }
+            } catch (html5Err) {
+                console.error("Both scanning methods failed.");
+                console.error("qr-scanner error:", qrScannerErr);
+                console.error("html5-qrcode error:", html5Err);
+
+                let errorMsg = "Could not detect a QR code in this image.";
+                if (html5Err.includes && html5Err.includes("No MultiFormat Readers")) {
+                    errorMsg = "QR code not detected. Please try a clearer image or use the camera.";
+                }
+
+                setError(errorMsg);
+                // Store the raw errors for debugging if the user asks
+                setRawResult(`Error 1: ${qrScannerErr?.message || qrScannerErr}\nError 2: ${html5Err}`);
             }
-
-            setError(errorMessage);
         } finally {
             setLoading(false);
             if (fileInputRef.current) {
