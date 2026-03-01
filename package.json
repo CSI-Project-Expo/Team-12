@@ -16,6 +16,7 @@
     "html5-qrcode": "^2.3.8",
     "lucide-react": "^0.575.0",
     "mongodb": "^7.1.0",
+    "qr-scanner": "^1.4.2",
     "qrcode": "^1.5.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

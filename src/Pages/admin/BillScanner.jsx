@@ -10,6 +10,7 @@ export default function BillScanner() {
     const [result, setResult] = useState(null)
     const [error, setError] = useState("")
     const [scannerMode, setScannerMode] = useState("upload") // "upload" or "camera"
+    const [preview, setPreview] = useState(null)
     const fileInputRef = useRef(null)
 
     const handleVerifyStr = async (str) => {
@@ -45,48 +46,41 @@ export default function BillScanner() {
         setError("");
         setResult(null);
 
+        // Preview
+        const reader = new FileReader();
+        reader.onload = (e) => setPreview(e.target.result);
+        reader.readAsDataURL(file);
+
         console.log("--- QR File Upload Started ---");
         console.log("File Name:", file.name);
         console.log("File Type:", file.type);
         console.log("File Size:", (file.size / 1024).toFixed(2), "KB");
 
-        let html5QrCode = null;
         try {
-            const { Html5Qrcode } = await import('html5-qrcode');
-            html5QrCode = new Html5Qrcode("reader");
+            const QrScanner = (await import('qr-scanner')).default;
 
-            let decodedText = "";
-            try {
-                console.log("Attempting scan with 'accurate' mode...");
-                // Try scanning with useBarCodeDetectorIfSupported: true (often more accurate)
-                decodedText = await html5QrCode.scanFile(file, true);
-            } catch (firstErr) {
-                console.warn("First scan attempt failed, retrying with fallback mode...", firstErr);
-                // Fallback: try with useBarCodeDetectorIfSupported: false (faster/standard engine)
-                decodedText = await html5QrCode.scanFile(file, false);
-            }
+            console.log("Attempting scan with 'qr-scanner'...");
+            const result = await QrScanner.scanImage(file, { returnDetails: true });
 
+            const decodedText = result.data;
             console.log("QR Code Decoded Successfully:", decodedText);
             setQrInput(decodedText);
 
-            // Success! Clean up and verify
-            await html5QrCode.clear();
+            // Success! Verify
             handleVerifyStr(decodedText);
         } catch (err) {
-            console.error("Final QR Scan Error:", err);
+            console.error("QR Scan Error:", err);
 
-            // Extract more specific error if possible
-            let errorMessage = "Could not find or read a QR code in the uploaded image. Please ensure the image is clear and the QR code is not distorted.";
-            if (err.includes?.("No QR code found")) {
-                errorMessage = "No QR code detected in the image. Try a higher quality photo or use the camera.";
+            let errorMessage = "Could not find or read a QR code. Please ensure the image is clear and the QR code is not distorted.";
+            if (err === "No QR code found") {
+                errorMessage = "No QR code detected. Try a higher quality photo or use the camera.";
+            } else if (typeof err === 'string' && err.includes("Scanner error")) {
+                errorMessage = err;
             }
 
             setError(errorMessage);
         } finally {
             setLoading(false);
-            if (html5QrCode) {
-                try { await html5QrCode.clear(); } catch (e) { /* ignore cleanup errors */ }
-            }
             if (fileInputRef.current) {
                 fileInputRef.current.value = "";
             }
@@ -174,24 +168,40 @@ export default function BillScanner() {
                             exit={{ opacity: 0, height: 0 }}
                             className="flex justify-center mb-8 overflow-hidden"
                         >
-                            <input
-                                type="file"
-                                accept="image/*"
-                                ref={fileInputRef}
-                                onChange={handleFileUpload}
-                                className="hidden"
-                                id="qr-upload"
-                            />
-                            <label
-                                htmlFor="qr-upload"
-                                className="flex flex-col items-center justify-center w-full max-w-sm h-48 border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-emerald-500/50 hover:bg-emerald-50 dark:hover:bg-emerald-500/5 rounded-2xl cursor-pointer transition-colors"
-                            >
-                                <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
-                                    <Upload size={24} className="text-emerald-500 dark:text-emerald-400" />
-                                </div>
-                                <p className="text-sm font-medium text-slate-700 dark:text-slate-200">Click to upload QR image</p>
-                                <p className="text-xs text-slate-500 mt-1">Supports PNG, JPG</p>
-                            </label>
+                            <div className="w-full max-w-sm flex flex-col gap-4">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    ref={fileInputRef}
+                                    onChange={handleFileUpload}
+                                    className="hidden"
+                                    id="qr-upload"
+                                />
+                                <label
+                                    htmlFor="qr-upload"
+                                    className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-emerald-500/50 hover:bg-emerald-50 dark:hover:bg-emerald-500/5 rounded-2xl cursor-pointer transition-colors overflow-hidden"
+                                >
+                                    {preview ? (
+                                        <img src={preview} alt="QR Preview" className="w-full h-full object-contain p-2" />
+                                    ) : (
+                                        <>
+                                            <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
+                                                <Upload size={24} className="text-emerald-500 dark:text-emerald-400" />
+                                            </div>
+                                            <p className="text-sm font-medium text-slate-700 dark:text-slate-200">Click to upload QR image</p>
+                                            <p className="text-xs text-slate-500 mt-1">Supports PNG, JPG</p>
+                                        </>
+                                    )}
+                                </label>
+                                {preview && (
+                                    <button
+                                        onClick={() => { setPreview(null); setQrInput(""); setError(""); }}
+                                        className="text-xs text-red-500 hover:text-red-600 flex items-center justify-center gap-1"
+                                    >
+                                        <XCircle size={12} /> Clear Current Image
+                                    </button>
+                                )}
+                            </div>
                         </motion.div>
                     )}
                 </AnimatePresence>
