@@ -1,5 +1,5 @@
-const nodemailer = require('nodemailer');
 const qrcode = require('qrcode');
+const { Resend } = require('resend');
 
 /**
  * Sends an order confirmation email to the user with an embedded QR code.
@@ -15,23 +15,18 @@ const sendOrderConfirmationEmail = async (user, orderId, items, totalAmount, qrS
     console.log('--- sendOrderConfirmationEmail INVOKED ---');
     console.log('user:', user.email, 'orderId:', orderId);
     try {
-        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-            console.log('Email credentials (EMAIL_USER, EMAIL_PASS) not found in .env. Skipping email sending.');
+        if (!process.env.RESEND_API_KEY) {
+            console.log('RESEND_API_KEY not found in .env. Skipping email sending.');
             return;
         }
 
-        console.log('Using credentials:', process.env.EMAIL_USER, 'PASS set:', !!process.env.EMAIL_PASS);
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
 
-        const transporter = nodemailer.createTransport({
-            service: 'gmail', // Use 'gmail' or configure host/port for your specific provider
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
+        console.log('Using Resend from email:', fromEmail);
 
-        // Generate QR code as Base64 image
-        const qrImageBase64 = await qrcode.toDataURL(qrString, {
+        // Generate QR code as Base64 image Buffer for Resend
+        const qrImageBuffer = await qrcode.toBuffer(qrString, {
             errorCorrectionLevel: 'M',
             margin: 4,
             width: 300,
@@ -78,7 +73,7 @@ const sendOrderConfirmationEmail = async (user, orderId, items, totalAmount, qrS
         `;
 
         const mailOptions = {
-            from: `"Smart Inventory" <${process.env.EMAIL_USER}>`,
+            from: `"Smart Inventory" <${fromEmail}>`,
             to: user.email,
             subject: `Order Confirmation - #${orderId}`,
             html: `
@@ -97,7 +92,10 @@ const sendOrderConfirmationEmail = async (user, orderId, items, totalAmount, qrS
                     <div style="text-align: center; margin-top: 30px;">
                         <h3>Your Order QR Code</h3>
                         <p style="color: #666; font-size: 14px;">Show this QR code at the store for quick verification.</p>
+                        <!-- For Resend inline image compatibility -->
                         <img src="cid:qrcode" alt="Order QR Code" style="max-width: 200px; border: 1px solid #ddd; padding: 10px; border-radius: 5px;" />
+                        <br/>
+                        <p style="color: #999; font-size: 12px; margin-top: 10px;">(If the QR code does not display, please see the attachment)</p>
                     </div>
 
                     <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;" />
@@ -111,18 +109,23 @@ const sendOrderConfirmationEmail = async (user, orderId, items, totalAmount, qrS
             attachments: [
                 {
                     filename: 'qrcode.png',
-                    content: qrImageBase64.split("base64,")[1],
-                    encoding: 'base64',
-                    cid: 'qrcode' // same cid value as in the html img src
+                    content: qrImageBuffer,
+                    // Optional content_id for CID embedding support
+                    content_id: 'qrcode'
                 }
             ]
         };
 
-        const info = await transporter.sendMail(mailOptions);
-        console.log(`Order confirmation email sent to ${user.email}`);
+        const { data, error } = await resend.emails.send(mailOptions);
+
+        if (error) {
+            console.error('Error sending order confirmation email via Resend:', error.message);
+        } else {
+            console.log(`Order confirmation email sent to ${user.email}, id: ${data?.id}`);
+        }
 
     } catch (error) {
-        console.error('Error sending order confirmation email:', error.message);
+        console.error('Exception while sending order confirmation email:', error.message);
         // Do not rethrow the error to prevent blocking the order process
     }
 };

@@ -30,14 +30,14 @@ export default function OrderConfirmation() {
         width: 256,
         margin: 2,
         color: {
-          dark: isDarkMode ? "#ffffff" : "#000000",
-          light: isDarkMode ? "#1e293b" : "#ffffff"
+          dark: "#000000",
+          light: "#ffffff"
         }
       })
         .then(url => setQrSrc(url))
         .catch(err => console.error("QR generation error:", err))
     }
-  }, [qrString, isDarkMode])
+  }, [qrString])
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6 md:p-10 transition-colors duration-300">
