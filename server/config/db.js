@@ -4,7 +4,20 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 const connectDB = async (retries = 3) => {
-    const mongoUri = process.env.MONGO_URI;
+    let mongoUri = process.env.MONGO_URI;
+
+    if (process.env.USE_MEMORY_DB === 'true') {
+        try {
+            console.log('Starting MongoDB Memory Server...');
+            const { MongoMemoryServer } = require('mongodb-memory-server');
+            const mongoServer = await MongoMemoryServer.create();
+            mongoUri = mongoServer.getUri();
+            process.env.MONGO_URI = mongoUri; // Update global variable for tenant connections
+            console.log(`Using MongoDB Memory Server at ${mongoUri}`);
+        } catch (err) {
+            console.error('Failed to start memory server:', err);
+        }
+    }
 
     if (!mongoUri || mongoUri.trim() === '') {
         console.error('ERROR: MONGO_URI is not defined.');

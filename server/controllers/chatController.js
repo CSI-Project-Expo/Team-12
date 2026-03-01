@@ -1,7 +1,7 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const Product = require('../models/Product');
 
 const handleChat = async (req, res) => {
+    const { Product, Sale, Bill, AuditLog } = req.tenantDb || {};
     try {
         const { message, history } = req.body;
 

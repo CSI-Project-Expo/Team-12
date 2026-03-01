@@ -1,6 +1,3 @@
-const Bill = require('../models/Bill');
-const Sale = require('../models/Sale');
-const Product = require('../models/Product');
 const User = require('../models/User');
 const crypto = require('crypto');
 
@@ -8,6 +5,7 @@ const crypto = require('crypto');
 // @route   POST /api/bills
 // @access  Private (admin)
 const createBill = async (req, res) => {
+    const { Product, Sale, Bill, AuditLog } = req.tenantDb || {};
     try {
         const { saleId } = req.body;
 
@@ -15,8 +13,9 @@ const createBill = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Sale ID is required' });
         }
 
-        // Generate a proper unique QR string
-        const qrString = crypto.randomBytes(16).toString('hex') + '-' + saleId.toString();
+        // Generate a proper unique QR string with shopId prefix
+        const shopId = req.user._id.toString();
+        const qrString = `${shopId}-${crypto.randomBytes(16).toString('hex')}-${saleId.toString()}`;
 
         const newBill = new Bill({
             saleId,
@@ -40,7 +39,7 @@ const createBill = async (req, res) => {
 
 // @desc    Verify a bill by its QR string
 // @route   GET /api/bills/verify/:code
-// @access  Private (admin)
+// @access  Public
 // SAFETY: Read-only
 const verifyBill = async (req, res) => {
     try {
@@ -50,15 +49,31 @@ const verifyBill = async (req, res) => {
             return res.status(400).json({ success: false, message: 'QR string is required' });
         }
 
+        const parts = code.split('-');
+        if (parts.length !== 3) {
+            return res.status(404).json({ success: false, message: 'Invalid QR code format.' });
+        }
+
+        const shopId = parts[0];
+
+        // Dynamically connect to the shop's tenant DB based on the parsed shopId
+        const getTenantConnection = require('../utils/tenantConnection');
+        const shopTenantDb = getTenantConnection(shopId);
+
+        const ShopBill = shopTenantDb.model('Bill');
+        const ShopSale = shopTenantDb.model('Sale');
+        const ShopProduct = shopTenantDb.model('Product');
+        const User = require('../models/User'); // Global model
+
         // Use: const bill = await Bill.findOne({ qrString: req.params.code });
-        const bill = await Bill.findOne({ qrString: code });
+        const bill = await ShopBill.findOne({ qrString: code });
 
         if (!bill) {
             return res.status(404).json({ success: false, message: 'Bill not found. Invalid QR code.' });
         }
 
-        // Get the associated sale with populated product details
-        const sale = await Sale.findById(bill.saleId).populate('customerId', 'name email');
+        // Get the associated sale with populated customer details
+        const sale = await ShopSale.findById(bill.saleId).populate({ path: 'customerId', model: User, select: 'name email' });
 
         if (!sale) {
             return res.status(404).json({ success: false, message: 'Sale record not found for this bill.' });
@@ -67,7 +82,7 @@ const verifyBill = async (req, res) => {
         // Get product names for each item
         const itemsWithNames = await Promise.all(
             sale.items.map(async (item) => {
-                const product = await Product.findById(item.productId).select('name sku');
+                const product = await ShopProduct.findById(item.productId).select('name sku');
                 return {
                     productName: product?.name || 'Unknown Product',
                     sku: product?.sku || 'N/A',

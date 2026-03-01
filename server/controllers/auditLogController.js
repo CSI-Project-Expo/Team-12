@@ -1,10 +1,9 @@
-const AuditLog = require('../models/AuditLog');
-const Product = require('../models/Product');
 
 // @desc    Get all audit logs (stock movements) for the logged-in admin's shop
 // @route   GET /api/audit-logs
 // @access  Private (admin)
 const getAuditLogs = async (req, res) => {
+    const { Product, Sale, Bill, AuditLog } = req.tenantDb || {};
     try {
         const logs = await AuditLog.find({ userId: req.user._id })
             .sort({ timestamp: -1 })

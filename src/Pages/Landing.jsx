@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 import { motion } from "framer-motion"
-import { ArrowRight, Package, Zap, Shield } from "lucide-react"
+import { ArrowRight, Package, Zap, Shield, QrCode } from "lucide-react"
 
 import ThemeToggle from "../components/ThemeToggle"
 
@@ -96,6 +96,7 @@ export default function Landing() {
         {[
           { icon: Package, title: "Real-time Stock", desc: "Atomic stock updates prevent overselling with concurrent request safety." },
           { icon: Shield, title: "Transaction Safe", desc: "ACID-compliant MongoDB transactions guarantee data integrity." },
+          { icon: QrCode, title: "QR-Code billing", desc: "Instantly generate and share bills via QR codes for seamless checkout." },
         ].map((feature, idx) => (
           <div
             key={idx}

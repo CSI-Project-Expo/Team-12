@@ -1,5 +1,4 @@
 const User = require('../models/User');
-const Product = require('../models/Product');
 
 // @desc    Get all shops (admin users with a storeName)
 // @route   GET /api/shops
@@ -39,7 +38,12 @@ const getShopProducts = async (req, res) => {
             return res.status(404).json({ message: 'Shop not found' });
         }
 
-        const products = await Product.find({
+        // Dynamically connect to the specific shop's tenant DB to fetch their products
+        const getTenantConnection = require('../utils/tenantConnection');
+        const shopTenantDb = getTenantConnection(shopId);
+        const ShopProduct = shopTenantDb.model('Product');
+
+        const products = await ShopProduct.find({
             createdBy: shopId,
             isDeleted: false
         })
@@ -49,7 +53,7 @@ const getShopProducts = async (req, res) => {
         res.json({
             shop: {
                 _id: shop._id,
-                name: shop.storeName,
+                name: shop.storeName || shop.name,
                 owner: shop.name
             },
             products

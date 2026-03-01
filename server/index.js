@@ -9,14 +9,14 @@ const startServer = async () => {
     try {
         await connectDB();
 
-        // ✅ Fixed CORS configuration (allows all Vercel deployments)
+        // ✅ Fixed CORS configuration (allows all Vercel deployments and localhost)
         app.use(cors({
             origin: function (origin, callback) {
                 // Allow requests with no origin (Postman, curl, etc.)
                 if (!origin) return callback(null, true);
 
-                // Allow any Vercel deployment
-                if (origin.includes("vercel.app")) {
+                // Allow any Vercel deployment or localhost
+                if (origin.includes("vercel.app") || origin.includes("localhost")) {
                     return callback(null, true);
                 }
 

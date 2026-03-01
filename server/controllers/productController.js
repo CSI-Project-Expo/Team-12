@@ -1,10 +1,9 @@
-const Product = require('../models/Product');
-const AuditLog = require('../models/AuditLog');
 
 // @desc    Get all products for the logged-in admin (non-deleted)
 // @route   GET /api/products
 // @access  Private (admin)
 const getAllProducts = async (req, res) => {
+    const { Product, Sale, Bill, AuditLog } = req.tenantDb || {};
     try {
         const filter = { isDeleted: false };
 
@@ -19,7 +18,7 @@ const getAllProducts = async (req, res) => {
 
         res.json(products);
     } catch (error) {
-        console.error('Error fetching products:', error.message);
+        console.error('FULL ERROR:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };
@@ -29,6 +28,7 @@ const getAllProducts = async (req, res) => {
 // @access  Private
 // SAFETY: Read-only — uses only find() with $expr, no writes/updates/deletes
 const getLowStockProducts = async (req, res) => {
+    const { Product, Sale, Bill, AuditLog } = req.tenantDb || {};
     try {
         const filter = {
             isDeleted: false,
@@ -45,7 +45,7 @@ const getLowStockProducts = async (req, res) => {
 
         res.json(products);
     } catch (error) {
-        console.error('Error fetching low-stock products:', error.message);
+        console.error('FULL ERROR:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };
@@ -54,6 +54,7 @@ const getLowStockProducts = async (req, res) => {
 // @route   POST /api/products
 // @access  Private (admin)
 const createProduct = async (req, res) => {
+    const { Product, Sale, Bill, AuditLog } = req.tenantDb || {};
     try {
         const { name, sku, category, price, stock, lowStockThreshold } = req.body;
 
@@ -73,7 +74,7 @@ const createProduct = async (req, res) => {
 
         res.status(201).json(product);
     } catch (error) {
-        console.error('Error creating product:', error.message);
+        console.error('FULL ERROR:', error);
 
         if (error.code === 11000) {
             return res.status(400).json({ message: 'A product with this SKU already exists' });
@@ -87,6 +88,7 @@ const createProduct = async (req, res) => {
 // @route   PUT /api/products/:id
 // @access  Private (admin)
 const updateProduct = async (req, res) => {
+    const { Product, Sale, Bill, AuditLog } = req.tenantDb || {};
     try {
         const { id } = req.params;
         const { stock, price } = req.body; // Can expand to other fields later
@@ -128,7 +130,7 @@ const updateProduct = async (req, res) => {
 
         res.json(updatedProduct);
     } catch (error) {
-        console.error('Error updating product:', error.message);
+        console.error('FULL ERROR:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };
@@ -137,6 +139,7 @@ const updateProduct = async (req, res) => {
 // @route   DELETE /api/products/:id
 // @access  Private (admin)
 const deleteProduct = async (req, res) => {
+    const { Product, Sale, Bill, AuditLog } = req.tenantDb || {};
     try {
         const { id } = req.params;
 
@@ -166,7 +169,7 @@ const deleteProduct = async (req, res) => {
 
         res.json({ message: 'Product deleted successfully' });
     } catch (error) {
-        console.error('Error deleting product:', error.message);
+        console.error('FULL ERROR:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };

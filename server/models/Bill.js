@@ -20,5 +20,4 @@ const billSchema = new mongoose.Schema({
     timestamps: true
 });
 
-const Bill = mongoose.model('Bill', billSchema);
-module.exports = Bill;
+module.exports = billSchema;

@@ -1,11 +1,10 @@
-const Product = require('../models/Product');
-const Sale = require('../models/Sale');
 
 // @desc    Get dashboard stats (total products, low stock count, today's sales, monthly revenue)
 // @route   GET /api/dashboard/stats
 // @access  Private (admin)
 // SAFETY: Read-only — uses only countDocuments() and aggregate(), no writes/updates/deletes
 const getDashboardStats = async (req, res) => {
+    const { Product, Sale, Bill, AuditLog } = req.tenantDb || {};
     try {
         // Today's date boundaries (UTC)
         const todayStart = new Date();

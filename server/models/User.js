@@ -58,8 +58,7 @@ const userSchema = new mongoose.Schema({
     timestamps: true // Adds createdAt and updatedAt
 });
 
-// Explicitly ensure the unique index on email is created
-userSchema.index({ email: 1 }, { unique: true });
+// 
 
 // Match user entered password to hashed password in database
 userSchema.methods.matchPassword = async function (enteredPassword) {

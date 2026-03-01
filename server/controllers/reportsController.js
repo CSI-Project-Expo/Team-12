@@ -1,11 +1,10 @@
-const Sale = require('../models/Sale');
-const Product = require('../models/Product');
 
 // @desc    Get daily sales data for the last 30 days
 // @route   GET /api/reports/sales-daily
 // @access  Private (admin)
 // SAFETY: Read-only — uses only aggregate(), no writes
 const getDailySales = async (req, res) => {
+    const { Product, Sale, Bill, AuditLog } = req.tenantDb || {};
     try {
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -60,6 +59,7 @@ const getDailySales = async (req, res) => {
 // @access  Private (admin)
 // SAFETY: Read-only
 const getMonthlyRevenue = async (req, res) => {
+    const { Product, Sale, Bill, AuditLog } = req.tenantDb || {};
     try {
         const twelveMonthsAgo = new Date();
         twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 11);
@@ -116,6 +116,7 @@ const getMonthlyRevenue = async (req, res) => {
 // @access  Private (admin)
 // SAFETY: Read-only
 const getTopProducts = async (req, res) => {
+    const { Product, Sale, Bill, AuditLog } = req.tenantDb || {};
     try {
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -170,6 +171,7 @@ const getTopProducts = async (req, res) => {
 // @access  Private (admin)
 // SAFETY: Read-only
 const getSalesBreakdown = async (req, res) => {
+    const { Product, Sale, Bill, AuditLog } = req.tenantDb || {};
     try {
         const breakdown = await Sale.aggregate([
             {
