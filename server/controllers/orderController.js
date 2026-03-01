@@ -108,13 +108,17 @@ const createOrder = async (req, res) => {
 
         // Send email silently in the background
         const customerDetails = {
-            name: customerName || req.user.name,
-            email: customerEmail || req.user.email
+            name: customerName || (req.user && req.user.name) || 'Customer',
+            email: customerEmail || (req.user && req.user.email)
         };
 
-        sendOrderConfirmationEmail(customerDetails, sale._id.toString(), emailItems, totalAmount, qrString).catch(err => {
-            console.error('Unexpected error wrapping email service:', err);
-        });
+        const safeOrderId = sale._id.toString();
+
+        if (customerDetails.email) {
+            sendOrderConfirmationEmail(customerDetails, safeOrderId, emailItems, totalAmount, bill.qrString).catch(err => {
+                console.error('Unexpected error wrapping email service:', err);
+            });
+        }
 
     } catch (error) {
         console.error('Order creation error:', error.message);
