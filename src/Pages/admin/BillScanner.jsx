@@ -45,26 +45,48 @@ export default function BillScanner() {
         setError("");
         setResult(null);
 
-        try {
-            // Need dynamic import or use standard qr-scanner since html-qrcode is moved
-            // But actually we can just use the html5-qrcode class directly since we installed it
-            const { Html5Qrcode } = await import('html5-qrcode');
-            const html5QrCode = new Html5Qrcode("reader");
+        console.log("--- QR File Upload Started ---");
+        console.log("File Name:", file.name);
+        console.log("File Type:", file.type);
+        console.log("File Size:", (file.size / 1024).toFixed(2), "KB");
 
-            // true ignores accuracy, pass false to enforce accurate reading over speed
-            const decodedText = await html5QrCode.scanFile(file, false);
+        let html5QrCode = null;
+        try {
+            const { Html5Qrcode } = await import('html5-qrcode');
+            html5QrCode = new Html5Qrcode("reader");
+
+            let decodedText = "";
+            try {
+                console.log("Attempting scan with 'accurate' mode...");
+                // Try scanning with useBarCodeDetectorIfSupported: true (often more accurate)
+                decodedText = await html5QrCode.scanFile(file, true);
+            } catch (firstErr) {
+                console.warn("First scan attempt failed, retrying with fallback mode...", firstErr);
+                // Fallback: try with useBarCodeDetectorIfSupported: false (faster/standard engine)
+                decodedText = await html5QrCode.scanFile(file, false);
+            }
+
+            console.log("QR Code Decoded Successfully:", decodedText);
             setQrInput(decodedText);
 
-            // clear the instance memory
-            html5QrCode.clear();
-
-            // verify
+            // Success! Clean up and verify
+            await html5QrCode.clear();
             handleVerifyStr(decodedText);
         } catch (err) {
-            console.error("QR Scan Error:", err);
-            setError("Could not find or read a QR code in the uploaded image. Please ensure the image is clear.");
+            console.error("Final QR Scan Error:", err);
+
+            // Extract more specific error if possible
+            let errorMessage = "Could not find or read a QR code in the uploaded image. Please ensure the image is clear and the QR code is not distorted.";
+            if (err.includes?.("No QR code found")) {
+                errorMessage = "No QR code detected in the image. Try a higher quality photo or use the camera.";
+            }
+
+            setError(errorMessage);
         } finally {
             setLoading(false);
+            if (html5QrCode) {
+                try { await html5QrCode.clear(); } catch (e) { /* ignore cleanup errors */ }
+            }
             if (fileInputRef.current) {
                 fileInputRef.current.value = "";
             }
