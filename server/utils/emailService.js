@@ -1,4 +1,5 @@
 const qrcode = require('qrcode');
+const nodemailer = require('nodemailer');
 const { Resend } = require('resend');
 
 /**
