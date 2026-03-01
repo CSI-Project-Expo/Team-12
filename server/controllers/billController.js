@@ -44,8 +44,8 @@ const createBill = async (req, res) => {
 const verifyBill = async (req, res) => {
     try {
         const { code } = req.params;
-        console.log('--- verifyBill INVOKED ---');
-        console.log('Verification code:', code);
+        console.log('\n--- verifyBill INVOKED ---');
+        console.log('Verification code received:', code);
 
         if (!code) {
             return res.status(400).json({ success: false, message: 'QR string is required' });
@@ -54,21 +54,40 @@ const verifyBill = async (req, res) => {
         const parts = code.split('-');
         console.log('Code parts:', parts);
 
-        if (parts.length !== 3) {
-            console.warn('Invalid code format. Expected 3 parts, got:', parts.length);
-            return res.status(404).json({ success: false, message: 'Invalid QR code format.' });
+        let shopId;
+        let qrQuery = code;
+
+        if (parts.length === 3) {
+            shopId = parts[0];
+            console.log('Format: Modern (3 parts). ShopId:', shopId);
+        } else if (parts.length === 2) {
+            // Legacy for some generated test codes: random-saleId
+            // We can't easily find the shop without the prefix unless we search all tenants
+            // Let's assume the current user's shop if they are logged in? 
+            // No, verifyBill should be public. 
+            console.warn('Format: Legacy (2 parts). Missing shopId prefix.');
+            return res.status(400).json({
+                success: false,
+                message: 'This QR code is in an old format. Please generate a new one.'
+            });
+        } else {
+            console.warn('Invalid code format. Parts:', parts.length);
+            return res.status(400).json({ success: false, message: 'Invalid QR code format.' });
         }
 
-        const shopId = parts[0];
-        console.log('Target Shop ID parsed:', shopId);
-
-        // Dynamically connect to the shop's tenant DB based on the parsed shopId
+        // Dynamically connect to the shop's tenant DB
         const getTenantConnection = require('../utils/tenantConnection');
-        const shopTenantDb = getTenantConnection(shopId);
+        let shopTenantDb;
+        try {
+            shopTenantDb = getTenantConnection(shopId);
+        } catch (dbErr) {
+            console.error('Database connection error for shopId:', shopId, dbErr.message);
+            return res.status(404).json({ success: false, message: 'Invalid Shop ID in QR code.' });
+        }
 
         if (!shopTenantDb) {
-            console.error('Failed to get tenant connection for shopId:', shopId);
-            return res.status(500).json({ success: false, message: 'Internal Server Error: Database connection failed.' });
+            console.error('No tenant database found for shopId:', shopId);
+            return res.status(404).json({ success: false, message: 'Shop record not found.' });
         }
 
         const ShopBill = shopTenantDb.model('Bill');
@@ -76,23 +95,27 @@ const verifyBill = async (req, res) => {
         const ShopProduct = shopTenantDb.model('Product');
         const User = require('../models/User'); // Global model
 
-        // Use: const bill = await Bill.findOne({ qrString: req.params.code });
+        console.log('Searching for bill in tenant DB...');
         const bill = await ShopBill.findOne({ qrString: code });
-        console.log('Bill lookup result:', bill ? 'FOUND' : 'NOT FOUND');
 
         if (!bill) {
-            return res.status(404).json({ success: false, message: 'Bill not found. Invalid QR code.' });
+            console.log('Bill NOT FOUND in database.');
+            return res.status(404).json({
+                success: false,
+                message: 'Verification failed: Bill record not found in system.'
+            });
         }
 
-        // Get the associated sale with populated customer details
-        const sale = await ShopSale.findById(bill.saleId).populate({ path: 'customerId', model: User, select: 'name email' });
-        console.log('Sale lookup result:', sale ? 'FOUND' : 'NOT FOUND');
+        console.log('Bill FOUND. Fetching sale details...');
+        const sale = await ShopSale.findById(bill.saleId)
+            .populate({ path: 'customerId', model: User, select: 'name email' });
 
         if (!sale) {
+            console.log('Sale record NOT FOUND for billId:', bill._id);
             return res.status(404).json({ success: false, message: 'Sale record not found for this bill.' });
         }
 
-        // Get product names for each item
+        console.log('Sale found. Mapping products...');
         const itemsWithNames = await Promise.all(
             sale.items.map(async (item) => {
                 const product = await ShopProduct.findById(item.productId).select('name sku');
@@ -106,6 +129,7 @@ const verifyBill = async (req, res) => {
             })
         );
 
+        console.log('Verification SUCCESSFUL.');
         res.json({
             success: true,
             verified: true,
@@ -127,8 +151,8 @@ const verifyBill = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Bill verification error:', error.message);
-        res.status(500).json({ success: false, message: 'Failed to verify bill' });
+        console.error('CRITICAL: Bill verification error:', error.message);
+        res.status(500).json({ success: false, message: 'Internal server error during verification.' });
     }
 };
 

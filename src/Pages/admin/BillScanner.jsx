@@ -11,9 +11,11 @@ export default function BillScanner() {
     const [error, setError] = useState("")
     const [scannerMode, setScannerMode] = useState("upload") // "upload" or "camera"
     const [preview, setPreview] = useState(null)
+    const [rawResult, setRawResult] = useState("")
     const fileInputRef = useRef(null)
 
     const handleVerifyStr = async (str) => {
+        setRawResult(str)
         if (!str || !str.trim()) {
             setError("Please enter a valid QR code.")
             return
@@ -231,10 +233,17 @@ export default function BillScanner() {
                         <motion.div
                             initial={{ opacity: 0, y: 5 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="mt-4 flex items-center gap-2 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 px-4 py-3 rounded-xl text-sm"
+                            className="mt-4 flex flex-col gap-2 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 px-4 py-3 rounded-xl text-sm"
                         >
-                            <XCircle size={16} />
-                            {error}
+                            <div className="flex items-center gap-2 font-medium">
+                                <XCircle size={16} />
+                                {error}
+                            </div>
+                            {rawResult && (
+                                <div className="mt-1 p-2 bg-white/50 dark:bg-black/20 rounded border border-red-100 dark:border-red-900/30 font-mono text-xs break-all">
+                                    Raw decoded string: {rawResult}
+                                </div>
+                            )}
                         </motion.div>
                     )
                 }
