@@ -235,10 +235,12 @@ This isn't just another inventory management system - it's a fundamental rethink
 ## Tech Stack
 
 ### Frontend
-- **Next.js** - Modern React framework for production-grade applications
+- **React + Vite** - Lightning-fast development with modern build tooling
+- **Tailwind CSS** - Utility-first CSS framework for rapid UI development
 
 ### UI / Design
-- **shadcn/ui** - Beautiful, accessible component library
+- **Framer Motion** - Production-ready animations
+- **Lucide React** - Modern icon library
 
 ### Backend
 - **Node.js / Express API** - Robust server-side architecture
@@ -306,38 +308,34 @@ Users can interact with their bills in two ways:
 
 ---
 
-## Why Next.js?
+## Why Vite + React?
 
-We chose Next.js as our primary framework for several strategic reasons:
+We chose Vite with React as our frontend stack for several strategic reasons:
 
-### Built by Vercel
-- Industry-leading framework with strong community support
-- Regular updates and cutting-edge features
-- Production-ready out of the box
+### Blazing Fast Development
+- Near-instant hot module replacement (HMR)
+- Optimized build output using Rollup
+- Lightning-fast cold starts
 
-### Unified Frontend + Backend
-- **API routes** handle lightweight backend logic
-- Frontend and backend in the same project
-- Simplified development workflow
-- Reduced complexity for simple backend needs
+### Separate Frontend & Backend
+- **Frontend** deployed on Vercel (static SPA)
+- **Backend** deployed on Render (Node.js + Express)
+- Clean separation of concerns
+- Independent scaling and deployment
 
-### Performance & Developer Experience
-- Server-side rendering (SSR) for better SEO
-- Static site generation (SSG) for optimal performance
-- Built-in optimization for images and assets
-- Excellent developer tooling and hot reload
-
-### Scalability
-- Easy deployment on Vercel platform
-- Automatic scaling capabilities
-- Edge network support for global performance
+### Production Optimized
+- Tree-shaking and code splitting out of the box
+- Optimized chunking for faster page loads
+- Environment variable injection at build time (`VITE_*`)
 
 ---
 
 ## Project Information
 
-**Last Updated:** February 24, 2026  
-**Team:** Team-12
+**Last Updated:** March 22, 2026  
+**Team:** Team-12  
+**Frontend:** Deployed on [Vercel](https://stocksmart-div.vercel.app)  
+**Backend:** Deployed on [Render](https://team-12-1.onrender.com)
 
 ---
 
@@ -653,6 +651,7 @@ Uses MongoDB `$expr` to compare two fields within the same document.
 - `axios` — HTTP client with interceptors
 - `framer-motion` — Animation library
 - `lucide-react` — Icon library
+- `@emailjs/browser` — Frontend email service (added March 2026)
 
 ---
 
@@ -792,13 +791,58 @@ Convert the application from a single-store demo into a multi-shop inventory man
 - Only manual testing performed.
 
 #### 2.4 Deployment & Production Setup
-- MongoDB Atlas cluster setup pending.
-- `.env` production configuration pending.
-- Cloud deployment (Render/Vercel/Netlify) pending.
+- ✅ MongoDB Atlas cluster configured and connected.
+- ✅ `.env` production configuration completed.
+- ✅ Frontend deployed on Vercel.
+- ✅ Backend deployed on Render.
 - Real-device staging validation pending.
 
 ### Current Status
-- The backend is stable, secure, and production-ready at code level.
+- The backend is stable, secure, and production-ready.
 - The QR verification system is fully functional.
 - The AI Chatbot is fully integrated.
-- Cloud deployment and automated UI testing are the next major steps.
+- Cloud deployment is complete (Vercel + Render).
+- Automated UI testing is the next major step.
+
+---
+
+## 📅 Update — 22 March 2026
+
+### 🎯 Focus: Production Stability & Email System
+
+This session focused on fixing production deployment issues and migrating the email system.
+
+---
+
+### 1. Production Deployment
+- Frontend deployed to **Vercel** (`stocksmart-div.vercel.app`)
+- Backend deployed to **Render** (`team-12-1.onrender.com`)
+- `.env.production` updated with correct Render backend URL
+- `vercel.json` configured with SPA rewrites
+
+### 2. Mongoose Model Export Fix
+- Models (`Product.js`, `Sale.js`, `Bill.js`, `AuditLog.js`) updated to export compiled models instead of raw schemas
+- `tenantConnection.js` updated with `getSchema()` helper to handle both compiled models and raw schemas
+- Prevents `Cannot overwrite model once compiled` errors in multi-tenant setup
+- Removed duplicate SKU index in `Product.js`
+
+### 3. Email System Migration
+- Migrated email sending from backend (Nodemailer/SMTP) to frontend (**EmailJS**)
+- `@emailjs/browser` package added
+- `Checkout.jsx` sends order confirmation emails via EmailJS after successful order
+- Backend `orderController.js` no longer handles email dispatch
+- Required Vercel env vars: `VITE_EMAILJS_SERVICE_ID`, `VITE_EMAILJS_TEMPLATE_ID`, `VITE_EMAILJS_PUBLIC_KEY`
+
+### 4. ESLint Configuration
+- Updated `eslint.config.js` to ignore config files (`vite.config.js`, `tailwind.config.js`, etc.)
+- Prevents false lint errors on build/config files
+
+### 5. QR Scanner Reliability
+- Added `html5-qrcode` fallback for QR file uploads in `BillScanner.jsx`
+- Improved reliability when primary scanner fails on uploaded images
+
+### 6. Backend Testing Utilities
+- Added standalone test scripts:
+  - `test-db.js` — MongoDB Atlas connection test
+  - `test-ethereal-direct.js` — Ethereal SMTP test
+  - `test-smtp-debug.js` — SMTP connectivity test
