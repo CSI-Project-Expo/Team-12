@@ -59,6 +59,12 @@ export default function Checkout({ cartItems, shopId, shopName, clearCart }) {
         qrString: data.qrString
       }
 
+      // ── TEMPORARY DEBUG LOGS (remove after verifying) ──
+      console.log("🔍 ENV CHECK:", import.meta.env)
+      console.log("🔍 SERVICE:", import.meta.env.VITE_EMAILJS_SERVICE_ID)
+      console.log("🔍 TEMPLATE:", import.meta.env.VITE_EMAILJS_TEMPLATE_ID)
+      console.log("🔍 KEY:", import.meta.env.VITE_EMAILJS_PUBLIC_KEY)
+
       // ── EmailJS: Send order confirmation email from frontend ──
       const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
       const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
