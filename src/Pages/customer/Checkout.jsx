@@ -50,15 +50,7 @@ export default function Checkout({ cartItems, shopId, shopName, clearCart }) {
       // Clear cart after successful order
       if (clearCart) clearCart()
 
-      console.log("=========================================")
-      console.log("📧 EMAILJS ENV DEBUG LOGS (PRODUCTION)")
-      console.log("RAW ENV OBJECT:", import.meta.env)
-      console.log("VITE_EMAILJS_SERVICE_ID:", import.meta.env.VITE_EMAILJS_SERVICE_ID)
-      console.log("VITE_EMAILJS_TEMPLATE_ID:", import.meta.env.VITE_EMAILJS_TEMPLATE_ID)
-      console.log("VITE_EMAILJS_PUBLIC_KEY:", import.meta.env.VITE_EMAILJS_PUBLIC_KEY)
-      console.log("=========================================")
-
-      // Trigger EmailJS to send Email directly from Frontend via user's Gmail
+      // Optional: Send email via EmailJS as frontend fallback (non-blocking)
       if (import.meta.env.VITE_EMAILJS_SERVICE_ID) {
           emailjs.send(
             import.meta.env.VITE_EMAILJS_SERVICE_ID,
@@ -71,10 +63,7 @@ export default function Checkout({ cartItems, shopId, shopName, clearCart }) {
               qr_string: data.qrString
             },
             import.meta.env.VITE_EMAILJS_PUBLIC_KEY
-          ).then(() => console.log('EmailJS receipt sent!'))
-           .catch(err => console.error("EmailJS failed:", err));
-      } else {
-          console.warn('EmailJS keys are missing from .env - skipping email dispatch.');
+          ).catch(err => console.error("EmailJS fallback failed:", err));
       }
 
       navigate("/order-confirmation", {

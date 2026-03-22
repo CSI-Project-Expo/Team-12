@@ -115,10 +115,9 @@ const createOrder = async (req, res) => {
         const safeOrderId = sale._id.toString();
 
         if (customerDetails.email) {
-            // EmailJS Migration: Email is now sent instantly via the React frontend.
-            // sendOrderConfirmationEmail(customerDetails, safeOrderId, emailItems, totalAmount, bill.qrString).catch(err => {
-            //     console.error('Non-blocking error during email dispatch:', err.message);
-            // });
+            sendOrderConfirmationEmail(customerDetails, safeOrderId, emailItems, totalAmount, bill.qrString).catch(err => {
+                console.error('Non-blocking error during email dispatch:', err.message);
+            });
         }
 
     } catch (error) {

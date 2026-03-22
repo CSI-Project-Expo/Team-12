@@ -1,10 +1,24 @@
 const mongoose = require('mongoose');
-const productSchema = require('../models/Product');
-const saleSchema = require('../models/Sale');
-const billSchema = require('../models/Bill');
-const auditLogSchema = require('../models/AuditLog');
+const ProductModel = require('../models/Product');
+const SaleModel = require('../models/Sale');
+const BillModel = require('../models/Bill');
+const AuditLogModel = require('../models/AuditLog');
 
 const tenantConnections = {};
+
+/**
+ * Extract the schema from a model export.
+ * Supports both compiled Mongoose models (model.schema) and raw Schema objects.
+ */
+const getSchema = (modelOrSchema) => {
+    if (modelOrSchema.schema && modelOrSchema.schema instanceof mongoose.Schema) {
+        return modelOrSchema.schema;
+    }
+    if (modelOrSchema instanceof mongoose.Schema) {
+        return modelOrSchema;
+    }
+    throw new Error('Invalid model export: expected a Mongoose Model or Schema');
+};
 
 const getTenantConnection = (tenantId) => {
     const dbName = `tenant_${tenantId}`;
@@ -34,10 +48,10 @@ const getTenantConnection = (tenantId) => {
 
     const db = mongoose.createConnection(baseUri);
 
-    db.model('Product', productSchema.schema);
-    db.model('Sale', saleSchema.schema);
-    db.model('Bill', billSchema.schema);
-    db.model('AuditLog', auditLogSchema.schema);
+    db.model('Product', getSchema(ProductModel));
+    db.model('Sale', getSchema(SaleModel));
+    db.model('Bill', getSchema(BillModel));
+    db.model('AuditLog', getSchema(AuditLogModel));
 
     tenantConnections[dbName] = db;
     return db;
