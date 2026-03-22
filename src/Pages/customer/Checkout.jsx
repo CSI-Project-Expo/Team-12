@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom"
 import { motion } from "framer-motion"
 import { CreditCard, ArrowLeft } from "lucide-react"
 import api from "../../lib/api"
+import emailjs from '@emailjs/browser'
 import ThemeToggle from "../../components/ThemeToggle"
 
 export default function Checkout({ cartItems, shopId, shopName, clearCart }) {
@@ -48,6 +49,25 @@ export default function Checkout({ cartItems, shopId, shopName, clearCart }) {
 
       // Clear cart after successful order
       if (clearCart) clearCart()
+
+      // Trigger EmailJS to send Email directly from Frontend via user's Gmail
+      if (import.meta.env.VITE_EMAILJS_SERVICE_ID) {
+          emailjs.send(
+            import.meta.env.VITE_EMAILJS_SERVICE_ID,
+            import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+            {
+              customer_name: name,
+              customer_email: email,
+              order_id: data.orderId,
+              total_amount: data.totalAmount,
+              qr_string: data.qrString
+            },
+            import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+          ).then(() => console.log('EmailJS receipt sent!'))
+           .catch(err => console.error("EmailJS failed:", err));
+      } else {
+          console.warn('EmailJS keys are missing from .env - skipping email dispatch.');
+      }
 
       navigate("/order-confirmation", {
         state: {

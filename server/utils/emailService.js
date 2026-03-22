@@ -14,7 +14,6 @@ const sendOrderConfirmationEmail = async (user, orderId, items, totalAmount, qrS
     console.log('No email service configured. Skipping email sending.');
     return;
 }
-        }
 
         // Generate QR code as Base64 image
         const qrImageBase64 = await qrcode.toDataURL(qrString, {

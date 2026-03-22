@@ -1,0 +1,782 @@
+﻿
+> smart-inventory-backend@1.0.0 test
+> node tests/run-all-tests.js
+
+
+ΓòöΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòù
+Γòæ     Smart Inventory ΓÇö Test Suite          Γòæ
+ΓòÜΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓò¥
+
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  TEST: Duplicate Email Prevention
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+
+  Γ£ô Connected to in-memory MongoDB
+
+  [1] Registering first user with email test@example.com...
+      Γ£à PASS ΓÇö First user created successfully
+
+  [2] Attempting to register second user with same email...
+      Γ£à PASS ΓÇö Duplicate email correctly rejected (E11000)
+
+  [3] Registering user with a different email...
+      Γ£à PASS ΓÇö User with different email created successfully
+
+  [4] Verifying password is hashed (bcrypt)...
+      Γ£à PASS ΓÇö Password is bcrypt-hashed, not stored as plain text
+
+  [5] Verifying matchPassword() works correctly...
+      Γ£à PASS ΓÇö matchPassword correctly validates passwords
+
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  Results: 5 passed, 0 failed out of 5
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  TEST: Simultaneous Sales Concurrency
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+
+  Γ£ô Connected to in-memory MongoDB
+
+  [1] Creating product with stock = 5...
+      Stock set to: 5
+      Firing 10 simultaneous purchase attempts (1 unit each)...
+
+node.exe : 
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+At line:1 char:1
++ & "C:\Program Files\
+nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~
+    + CategoryInfo    
+          : NotSpeci  
+  fied: ((node:8928   
+ ) [MO...fter'` in    
+stead.:String) []    
+, RemoteException
+    + FullyQualifiedE 
+   rrorId : NativeCo  
+  mmandError
+ 
+(Use `node 
+--trace-warnings ...` 
+to show where the 
+warning was created)
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+      Successful purchases: 5
+      Rejected purchases:   5
+      Γ£à PASS ΓÇö Exactly 5 out of 10 purchases succeeded
+      Γ£à PASS ΓÇö Exactly 5 out of 10 purchases were rejected
+
+  [2] Checking final stock...
+      Γ£à PASS ΓÇö Final stock is 0 (no overselling occurred)
+
+  [3] Attempting purchase when stock is 0...
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+      Γ£à PASS ΓÇö Purchase correctly rejected when stock is 0
+
+  [4] High contention test: 50 concurrent requests for 10 items...
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+      Successful: 10/50, Final stock: 0
+      Γ£à PASS ΓÇö Exactly 10 succeeded, stock is 0, no overselling
+
+  [5] Verifying stock never went negative at any point...
+      Γ£à PASS ΓÇö No product has negative stock
+
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  Results: 6 passed, 0 failed out of 6
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  TEST: Transaction Rollback Behavior
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+
+  Starting MongoDB Replica Set (required for transactions)...
+  Γ£ô Connected to replica set and indexes built
+
+  [1] Testing successful transaction...
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+      Γ£à PASS ΓÇö Sale created, stock reduced 10ΓåÆ8, bill generated
+
+  [2] Testing rollback on insufficient stock...
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+      Γ£à PASS ΓÇö Transaction rolled back: stock unchanged, no sale/bill created
+
+  [3] Testing rollback on non-existent product...
+      Γ£à PASS ΓÇö Transaction rolled back: no orphan records, correct error message
+
+  [4] Testing multi-item rollback (one bad item cancels all)...
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+(node:8928) 
+[MONGOOSE] Warning: 
+mongoose: the `new` 
+option for 
+`findOneAndUpdate()` 
+and 
+`findOneAndReplace()` 
+is deprecated. Use 
+`returnDocument: 
+'after'` instead.
+      Γ£à PASS ΓÇö Both products rolled back, no sale created
+             Good Item: 20ΓåÆ20 (unchanged)
+             Low Stock: 1ΓåÆ1 (unchanged)
+
+  [5] Verifying audit log was created for successful transaction...
+      Γ£à PASS ΓÇö Found 1 TRANSACTION audit log(s)
+
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  Results: 5 passed, 0 failed out of 5
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+
+ΓòöΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòù
+Γòæ           FINAL RESULTS                   Γòæ
+ΓòáΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòú
+Γòæ  Total Passed:   16                       Γòæ
+Γòæ  Total Failed:    0                       Γòæ
+Γòæ  Total Tests:    16                       Γòæ
+ΓòáΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòú
+Γòæ  Γ£à ALL TESTS PASSED                      Γòæ
+ΓòÜΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓò¥
+

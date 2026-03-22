@@ -34,10 +34,10 @@ const getTenantConnection = (tenantId) => {
 
     const db = mongoose.createConnection(baseUri);
 
-    db.model('Product', productSchema);
-    db.model('Sale', saleSchema);
-    db.model('Bill', billSchema);
-    db.model('AuditLog', auditLogSchema);
+    db.model('Product', productSchema.schema);
+    db.model('Sale', saleSchema.schema);
+    db.model('Bill', billSchema.schema);
+    db.model('AuditLog', auditLogSchema.schema);
 
     tenantConnections[dbName] = db;
     return db;

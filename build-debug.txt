@@ -1,0 +1,77 @@
+﻿
+> smart-inventory-frontend@0.0.0 build
+> vite build
+
+[36mvite v7.3.1 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32mΓ£ô[39m 2927 modules transformed.
+rendering chunks...
+node.exe : 
+[33m[plugin 
+vite:reporter] 
+At line:1 char:1
++ & "C:\Program Files\
+nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~
+    + CategoryInfo    
+          : NotSpeci  
+  fied: ([33m[plug   
+ in vite:reporter]    
+ :String) [], Rem    
+oteException
+    + FullyQualifiedE 
+   rrorId : NativeCo  
+  mmandError
+ 
+(!) C:/Users/aadis/One
+Drive/Desktop/Team-12/
+node_modules/html5-qrc
+ode/esm/index.js is 
+dynamically imported 
+by C:/Users/aadis/OneD
+rive/Desktop/Team-12/s
+rc/Pages/admin/BillSca
+nner.jsx but also 
+statically imported 
+by C:/Users/aadis/OneD
+rive/Desktop/Team-12/s
+rc/components/QRCodeSc
+anner.jsx, dynamic 
+import will not move 
+module into another 
+chunk.
+[39m
+computing gzip size...
+[2mdist/[22m[32mindex.html                                [39m[1m[2m    0.56 kB[22m[1m[22m[2m Γöé gzip:   0.36 kB[22m
+[2mdist/[22m[35massets/index-BvmLqVrZ.css                 [39m[1m[2m   50.21 kB[22m[1m[22m[2m Γöé gzip:   8.06 kB[22m
+[2mdist/[22m[36massets/qr-scanner.min-B8ukbp8k.js         [39m[1m[2m   15.77 kB[22m[1m[22m[2m Γöé gzip:   5.61 kB[22m
+[2mdist/[22m[36massets/qr-scanner-worker.min-D85Z9gVD.js  [39m[1m[2m   43.95 kB[22m[1m[22m[2m Γöé gzip:  10.46 kB[22m
+[2mdist/[22m[36massets/index-B12Nl-Fh.js                  [39m[1m[33m1,333.65 kB[39m[22m[2m Γöé gzip: 397.36 kB[22m
+[33m
+(!) Some chunks are 
+larger than 500 kB 
+after minification. 
+Consider:
+- Using dynamic 
+import() to 
+code-split the 
+application
+- Use build.rollupOpti
+ons.output.manualChunk
+s to improve 
+chunking: https://roll
+upjs.org/configuration
+-options/#output-manua
+lchunks
+- Adjust chunk size 
+limit for this 
+warning via build.chun
+kSizeWarningLimit.[39
+m
+[32mΓ£ô built in 13.34s[39m

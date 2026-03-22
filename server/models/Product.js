@@ -47,8 +47,8 @@ const productSchema = new mongoose.Schema({
 
 // Explicit compound indexes can be added here if needed, 
 // but single field indexes are defined in the schema above.
-productSchema.index({ sku: 1 }, { unique: true });
+// Removed duplicate sku index
 productSchema.index({ name: 1 });
 productSchema.index({ category: 1 });
 
-module.exports = productSchema;
+module.exports = mongoose.models.Product || mongoose.model('Product', productSchema);

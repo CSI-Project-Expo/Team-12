@@ -33,7 +33,8 @@ async function run() {
         });
         const uri = replSet.getUri();
         await mongoose.connect(uri);
-        console.log('  ✓ Connected to replica set\n');
+        await Promise.all(Object.values(mongoose.models).map(m => m.init()));
+        console.log('  ✓ Connected to replica set and indexes built\n');
 
         // Create test data
         const admin = await User.create({

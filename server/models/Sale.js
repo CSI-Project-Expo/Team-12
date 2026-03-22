@@ -60,4 +60,4 @@ saleSchema.index({ createdAt: -1 });
 saleSchema.index({ customerId: 1 });
 saleSchema.index({ status: 1 });
 
-module.exports = saleSchema;
+module.exports = mongoose.models.Sale || mongoose.model('Sale', saleSchema);
