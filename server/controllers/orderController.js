@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
-const { sendOrderConfirmationEmail } = require('../utils/emailService');
 const getTenantConnection = require('../utils/tenantConnection');
 
 // @desc    Create a new order (sale) with stock deduction + bill generation
@@ -106,19 +105,7 @@ const createOrder = async (req, res) => {
             qrString: bill.qrString
         });
 
-        // Send email silently in the background
-        const customerDetails = {
-            name: customerName || (req.user && req.user.name) || 'Customer',
-            email: customerEmail || (req.user && req.user.email)
-        };
-
-        const safeOrderId = sale._id.toString();
-
-        if (customerDetails.email) {
-            sendOrderConfirmationEmail(customerDetails, safeOrderId, emailItems, totalAmount, bill.qrString).catch(err => {
-                console.error('Non-blocking error during email dispatch:', err.message);
-            });
-        }
+        // Email is handled by EmailJS on the frontend — no backend email needed.
 
     } catch (error) {
         console.error('Order creation error:', error.message);

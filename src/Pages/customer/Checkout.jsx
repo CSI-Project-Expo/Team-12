@@ -50,31 +50,42 @@ export default function Checkout({ cartItems, shopId, shopName, clearCart }) {
       // Clear cart after successful order
       if (clearCart) clearCart()
 
-      // Optional: Send email via EmailJS as frontend fallback (non-blocking)
-      if (import.meta.env.VITE_EMAILJS_SERVICE_ID) {
-          emailjs.send(
-            import.meta.env.VITE_EMAILJS_SERVICE_ID,
-            import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-            {
-              customer_name: name,
-              customer_email: email,
-              order_id: data.orderId,
-              total_amount: data.totalAmount,
-              qr_string: data.qrString
-            },
-            import.meta.env.VITE_EMAILJS_PUBLIC_KEY
-          ).catch(err => console.error("EmailJS fallback failed:", err));
+      // Prepare navigation state
+      const confirmationState = {
+        orderId: data.orderId,
+        totalAmount: data.totalAmount,
+        itemCount: data.itemCount,
+        shopName,
+        qrString: data.qrString
       }
 
-      navigate("/order-confirmation", {
-        state: {
-          orderId: data.orderId,
-          totalAmount: data.totalAmount,
-          itemCount: data.itemCount,
-          shopName,
-          qrString: data.qrString
+      // ── EmailJS: Send order confirmation email from frontend ──
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+
+      if (!serviceId || !templateId || !publicKey) {
+        console.error("❌ [EmailJS] Missing env variables:", { serviceId, templateId, publicKey })
+      } else {
+        console.log("📧 [EmailJS] Sending order confirmation email...")
+        try {
+          const emailResponse = await emailjs.send(serviceId, templateId, {
+            customer_name: name,
+            customer_email: email,
+            order_id: data.orderId,
+            total_amount: data.totalAmount,
+            qr_string: data.qrString
+          }, publicKey)
+          console.log("✅ [EmailJS] Email sent successfully:", emailResponse.status, emailResponse.text)
+        } catch (emailErr) {
+          console.error("❌ [EmailJS] Failed to send email:", emailErr)
         }
-      })
+      }
+
+      // Delay navigation so console logs are visible during debugging
+      setTimeout(() => {
+        navigate("/order-confirmation", { state: confirmationState })
+      }, 2000)
 
     } catch (err) {
       console.error("Order error:", err)
