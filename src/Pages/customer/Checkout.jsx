@@ -50,6 +50,14 @@ export default function Checkout({ cartItems, shopId, shopName, clearCart }) {
       // Clear cart after successful order
       if (clearCart) clearCart()
 
+      console.log("=========================================")
+      console.log("📧 EMAILJS ENV DEBUG LOGS (PRODUCTION)")
+      console.log("RAW ENV OBJECT:", import.meta.env)
+      console.log("VITE_EMAILJS_SERVICE_ID:", import.meta.env.VITE_EMAILJS_SERVICE_ID)
+      console.log("VITE_EMAILJS_TEMPLATE_ID:", import.meta.env.VITE_EMAILJS_TEMPLATE_ID)
+      console.log("VITE_EMAILJS_PUBLIC_KEY:", import.meta.env.VITE_EMAILJS_PUBLIC_KEY)
+      console.log("=========================================")
+
       // Trigger EmailJS to send Email directly from Frontend via user's Gmail
       if (import.meta.env.VITE_EMAILJS_SERVICE_ID) {
           emailjs.send(
