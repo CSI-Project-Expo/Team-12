@@ -20,6 +20,8 @@ export default function Checkout({ cartItems, shopId, shopName, clearCart }) {
   )
 
   const handleOrder = async () => {
+    console.log("🔥 STEP 1: handleOrder TRIGGERED")
+
     if (!name || !email || !phone) {
       setError("Please fill in all fields.")
       return
@@ -34,6 +36,8 @@ export default function Checkout({ cartItems, shopId, shopName, clearCart }) {
     setError("")
 
     try {
+      console.log("🔥 STEP 2: Sending order to API...")
+
       const orderPayload = {
         shopId,
         items: cartItems.map(item => ({
@@ -46,11 +50,10 @@ export default function Checkout({ cartItems, shopId, shopName, clearCart }) {
       }
 
       const { data } = await api.post("/orders", orderPayload)
+      console.log("🔥 STEP 3: ORDER CREATED:", data)
 
-      // Clear cart after successful order
       if (clearCart) clearCart()
 
-      // Prepare navigation state
       const confirmationState = {
         orderId: data.orderId,
         totalAmount: data.totalAmount,
@@ -59,42 +62,41 @@ export default function Checkout({ cartItems, shopId, shopName, clearCart }) {
         qrString: data.qrString
       }
 
-      // ── TEMPORARY DEBUG LOGS (remove after verifying) ──
-      console.log("🔍 ENV CHECK:", import.meta.env)
-      console.log("🔍 SERVICE:", import.meta.env.VITE_EMAILJS_SERVICE_ID)
-      console.log("🔍 TEMPLATE:", import.meta.env.VITE_EMAILJS_TEMPLATE_ID)
-      console.log("🔍 KEY:", import.meta.env.VITE_EMAILJS_PUBLIC_KEY)
+      console.log("🔥 STEP 4: ENTERING EMAIL SECTION")
 
-      // ── EmailJS: Send order confirmation email from frontend ──
       const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
       const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
       const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
 
-      if (!serviceId || !templateId || !publicKey) {
-        console.error("❌ [EmailJS] Missing env variables:", { serviceId, templateId, publicKey })
-      } else {
-        console.log("📧 [EmailJS] Sending order confirmation email...")
-        try {
-          const emailResponse = await emailjs.send(serviceId, templateId, {
+      console.log("🔥 STEP 5: ENV VARS →", "SERVICE:", serviceId, "| TEMPLATE:", templateId, "| KEY:", publicKey)
+
+      // Force EmailJS to run — no condition guard for debugging
+      console.log("📧 STEP 6: Calling emailjs.send()...")
+      try {
+        const emailResponse = await emailjs.send(
+          serviceId || "MISSING_SERVICE_ID",
+          templateId || "MISSING_TEMPLATE_ID",
+          {
             customer_name: name,
             customer_email: email,
             order_id: data.orderId,
             total_amount: data.totalAmount,
             qr_string: data.qrString
-          }, publicKey)
-          console.log("✅ [EmailJS] Email sent successfully:", emailResponse.status, emailResponse.text)
-        } catch (emailErr) {
-          console.error("❌ [EmailJS] Failed to send email:", emailErr)
-        }
+          },
+          publicKey || "MISSING_PUBLIC_KEY"
+        )
+        console.log("✅ STEP 7: Email sent!", emailResponse.status, emailResponse.text)
+      } catch (emailErr) {
+        console.error("❌ STEP 7: EmailJS FAILED:", emailErr)
       }
 
-      // Delay navigation so console logs are visible during debugging
+      console.log("🔥 STEP 8: Navigating in 3 seconds...")
       setTimeout(() => {
         navigate("/order-confirmation", { state: confirmationState })
-      }, 2000)
+      }, 3000)
 
     } catch (err) {
-      console.error("Order error:", err)
+      console.error("💥 ORDER ERROR:", err)
       const message = err.response?.data?.message || "Failed to place order. Please try again."
       setError(message)
     } finally {
