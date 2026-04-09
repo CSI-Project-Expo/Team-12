@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
+import api from '../lib/api';
 import { MessageCircle, X, Send, Bot, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -34,7 +34,7 @@ const ChatBot = () => {
         try {
             const history = messages;
 
-            const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/chat`, {
+            const response = await api.post('/chat', {
                 message: userMessage.text,
                 history: history
             });

@@ -2,7 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
-const tenantMiddleware = require('./middleware/tenantMiddleware'); // ✅ ADD THIS
+const tenantMiddleware = require('./middleware/tenantMiddleware');
+const { protect } = require('./middleware/authMiddleware');
 
 const app = express();
 
@@ -48,7 +49,7 @@ const startServer = async () => {
         app.use('/api/audit-logs', require('./routes/auditLogRoutes'));
 
         // 🔥 FIXED CHAT ROUTE (IMPORTANT)
-        app.use('/api/chat', tenantMiddleware, require('./routes/chatRoutes'));
+        app.use('/api/chat', protect, tenantMiddleware, require('./routes/chatRoutes'));
 
         app.get('/', (req, res) => {
             res.send('Smart Inventory API is running...');
