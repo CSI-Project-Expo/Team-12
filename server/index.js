@@ -10,20 +10,17 @@ const startServer = async () => {
         await connectDB();
 
         // ✅ Fixed CORS configuration (allows all Vercel deployments and localhost)
+        // ✅ SIMPLE WORKING CORS FIX
         app.use(cors({
-            origin: function (origin, callback) {
-                // Allow requests with no origin (Postman, curl, etc.)
-                if (!origin) return callback(null, true);
-
-                // Allow any Vercel deployment or localhost
-                if (origin.includes("vercel.app") || origin.includes("localhost")) {
-                    return callback(null, true);
-                }
-
-                return callback(new Error("Not allowed by CORS"));
-            },
+            origin: [
+                "http://localhost:5173",
+                "https://stock-smart-blond.vercel.app"
+            ],
+            methods: ["GET", "POST", "PUT", "DELETE"],
             credentials: true
         }));
+
+        app.options('*', cors());
 
         app.use(express.json({ limit: '50mb' }));
         app.use(express.urlencoded({ limit: '50mb', extended: true }));
