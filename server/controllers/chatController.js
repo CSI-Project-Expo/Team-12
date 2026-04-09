@@ -65,16 +65,7 @@ Answer the user's questions based on this inventory data. If they ask about some
         let aiResponse = "Sorry, I couldn't generate a response.";
 
         try {
-            const result = await model.generateContent({
-                contents: [
-                    ...formattedHistory,
-                    {
-                        role: "user",
-                        parts: [{ text: message }]
-                    }
-                ]
-            });
-
+            const result = await model.generateContent(message);
             if (result?.response?.text) {
                 aiResponse = result.response.text();
             }
