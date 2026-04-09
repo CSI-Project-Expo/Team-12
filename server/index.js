@@ -11,11 +11,26 @@ const startServer = async () => {
 
         // ✅ CORS (clean + working)
         app.use(cors({
-            origin: "https://stock-smart-blond.vercel.app",
+            origin: [
+                "http://localhost:5173",
+                "https://stock-smart-blond.vercel.app"
+            ],
             methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             allowedHeaders: ["Content-Type", "Authorization"],
             credentials: true
         }));
+
+        app.use((req, res, next) => {
+            res.header("Access-Control-Allow-Origin", "https://stock-smart-blond.vercel.app");
+            res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+            res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+
+            if (req.method === "OPTIONS") {
+                return res.sendStatus(200);
+            }
+
+            next();
+        });
 
         // ✅ Body parsers (only once)
         app.use(express.json({ limit: '50mb' }));
