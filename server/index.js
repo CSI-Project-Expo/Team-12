@@ -7,16 +7,26 @@ const { protect } = require('./middleware/authMiddleware');
 
 const app = express();
 
+// ✅ Allowed origins (single source of truth)
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://stock-smart-blond.vercel.app",
+    "https://stocksmart-seven.vercel.app"
+];
+
 const startServer = async () => {
     try {
         await connectDB();
 
-        // ✅ CORS (stable)
+        // ✅ CORS
         app.use(cors({
-            origin: [
-                "http://localhost:5173",
-                "https://stock-smart-blond.vercel.app"
-            ],
+            origin: function (origin, callback) {
+                if (!origin) return callback(null, true); // allow non-browser clients
+                if (allowedOrigins.includes(origin)) {
+                    return callback(null, true);
+                }
+                return callback(new Error("Not allowed by CORS"));
+            },
             methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             allowedHeaders: ["Content-Type", "Authorization"],
             credentials: true
@@ -24,7 +34,12 @@ const startServer = async () => {
 
         // ✅ Handle preflight
         app.use((req, res, next) => {
-            res.header("Access-Control-Allow-Origin", "https://stock-smart-blond.vercel.app");
+            const origin = req.headers.origin;
+
+            if (origin && allowedOrigins.includes(origin)) {
+                res.header("Access-Control-Allow-Origin", origin);
+            }
+
             res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
             res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
 
@@ -34,7 +49,6 @@ const startServer = async () => {
 
             next();
         });
-
         app.use(express.json({ limit: '50mb' }));
         app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
