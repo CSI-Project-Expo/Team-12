@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
+const tenantMiddleware = require('./middleware/tenantMiddleware'); // ✅ ADD THIS
 
 const app = express();
 
@@ -9,7 +10,7 @@ const startServer = async () => {
     try {
         await connectDB();
 
-        // ✅ CORS (clean + working)
+        // ✅ CORS (stable)
         app.use(cors({
             origin: [
                 "http://localhost:5173",
@@ -20,6 +21,7 @@ const startServer = async () => {
             credentials: true
         }));
 
+        // ✅ Handle preflight
         app.use((req, res, next) => {
             res.header("Access-Control-Allow-Origin", "https://stock-smart-blond.vercel.app");
             res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
@@ -32,10 +34,10 @@ const startServer = async () => {
             next();
         });
 
-        // ✅ Body parsers (only once)
         app.use(express.json({ limit: '50mb' }));
         app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
+        // ✅ Routes
         app.use('/api/auth', require('./routes/authRoutes'));
         app.use('/api/products', require('./routes/productRoutes'));
         app.use('/api/dashboard', require('./routes/dashboardRoutes'));
@@ -44,7 +46,9 @@ const startServer = async () => {
         app.use('/api/bills', require('./routes/billRoutes'));
         app.use('/api/reports', require('./routes/reportsRoutes'));
         app.use('/api/audit-logs', require('./routes/auditLogRoutes'));
-        app.use('/api/chat', require('./routes/chatRoutes'));
+
+        // 🔥 FIXED CHAT ROUTE (IMPORTANT)
+        app.use('/api/chat', tenantMiddleware, require('./routes/chatRoutes'));
 
         app.get('/', (req, res) => {
             res.send('Smart Inventory API is running...');
@@ -70,7 +74,6 @@ const startServer = async () => {
     }
 };
 
-// Catch unhandled promise rejections
 process.on('unhandledRejection', (err) => {
     console.error('Unhandled Promise Rejection:', err.message || err);
 });
