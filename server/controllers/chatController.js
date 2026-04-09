@@ -19,9 +19,19 @@ const handleChat = async (req, res) => {
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
         // Fetch context: Products (Inventory)
-        const products = await Product.find({ isDeleted: false }).select('name category price stock');
+        if (!Product) {
+            return res.status(500).json({
+                success: false,
+                message: "Tenant database not initialized properly"
+            });
+        }
 
-        const inventoryContext = products.map(p => `- ${p.name} (${p.category || 'N/A'}): $${p.price}, Stock: ${p.stock}`).join('\n');
+        const products = await Product.find({ isDeleted: false })
+            .select('name category price stock');
+
+        const inventoryContext = (products || [])
+            .map(p => `- ${p.name} (${p.category || 'N/A'}): $${p.price}, Stock: ${p.stock}`)
+            .join('\n');
 
         const systemPrompt = `You are Antigravity, a highly intelligent and helpful AI assistant for the StockSmart Inventory Management System. 
 Your goal is to help users manage their inventory, answer questions about stock, prices, products, and provide general assistance. 
@@ -52,8 +62,18 @@ Answer the user's questions based on this inventory data. If they ask about some
             history: formattedHistory
         });
 
-        const result = await chat.sendMessage(message);
-        const aiResponse = result.response.text();
+        let aiResponse = "Sorry, I couldn't generate a response.";
+
+        try {
+            const result = await chat.sendMessage(message);
+
+            if (result?.response?.text) {
+                aiResponse = result.response.text();
+            }
+        } catch (geminiError) {
+            console.error("Gemini API Error:", geminiError.message);
+            aiResponse = "Sorry, AI service is currently unavailable.";
+        }
 
         res.json({
             success: true,
