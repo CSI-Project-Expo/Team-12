@@ -66,9 +66,10 @@ Answer the user's questions based on this inventory data. If they ask about some
 
         try {
             const result = await model.generateContent(message);
-            if (result?.response?.text) {
-                aiResponse = result.response.text();
-            }
+
+            const text = result.response.text();
+            aiResponse = text || "No response from AI";
+
         } catch (geminiError) {
             console.error("Gemini FULL ERROR:", geminiError);
             aiResponse = "Sorry, AI service is currently unavailable.";
