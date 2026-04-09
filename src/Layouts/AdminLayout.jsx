@@ -9,14 +9,11 @@ import {
   Settings,
   LogOut,
   ChevronDown,
-  Sparkles,
-  X,
-  Send,
   TrendingUp,
   ScanLine
 } from "lucide-react"
 import ThemeToggle from "../components/ThemeToggle"
-import { motion, AnimatePresence } from "framer-motion"
+import { AnimatePresence } from "framer-motion"
 
 const navItems = [
   { label: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
@@ -32,7 +29,7 @@ const navItems = [
 export default function AdminLayout() {
   const location = useLocation()
   const navigate = useNavigate()
-  const [aiOpen, setAiOpen] = useState(false)
+
   const [profileOpen, setProfileOpen] = useState(false)
   const profileRef = useRef(null)
 
@@ -176,84 +173,6 @@ export default function AdminLayout() {
           <Outlet />
         </main>
       </div>
-
-      {/* ─── Floating AI Button ─── */}
-      <button
-        onClick={() => setAiOpen(true)}
-        className="fixed bottom-8 right-8 bg-slate-900 dark:bg-white text-white dark:text-slate-900 w-14 h-14 rounded-full shadow-xl shadow-slate-900/20 dark:shadow-white/10 hover:shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center z-30"
-      >
-        <Sparkles size={24} strokeWidth={2.5} />
-      </button>
-
-      {/* ─── AI Slide-in Panel ─── */}
-      <AnimatePresence>
-        {aiOpen && (
-          <>
-            {/* Overlay */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setAiOpen(false)}
-              className="fixed inset-0 bg-slate-900/40 dark:bg-slate-900/60 backdrop-blur-sm z-40"
-            />
-            {/* Panel */}
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 h-full w-full sm:w-96 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl z-50 flex flex-col"
-            >
-              <div className="flex justify-between items-center px-6 py-5 border-b border-slate-200 dark:border-slate-800/50 bg-slate-50 dark:bg-slate-800/30">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center">
-                    <Sparkles size={16} className="text-indigo-600 dark:text-indigo-400" />
-                  </div>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">AI Assistant</h3>
-                </div>
-                <button
-                  onClick={() => setAiOpen(false)}
-                  className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-slate-300 transition-colors"
-                >
-                  <X size={16} />
-                </button>
-              </div>
-
-              <div className="flex-1 p-6 overflow-y-auto">
-                <div className="bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 rounded-2xl p-5 mb-6">
-                  <p className="font-bold text-indigo-900 dark:text-indigo-300 text-sm mb-3">Try asking:</p>
-                  <ul className="space-y-2.5">
-                    {[
-                      "Which products are low on stock?",
-                      "What is my top selling item?",
-                      "Generate a sales report for today",
-                    ].map((suggestion, i) => (
-                      <li key={i} className="flex items-center gap-2 text-sm font-medium text-indigo-700 dark:text-indigo-400 cursor-pointer hover:text-indigo-900 dark:hover:text-indigo-300 transition-colors">
-                        <span className="w-1.5 h-1.5 bg-indigo-400 dark:bg-indigo-500 rounded-full" />
-                        {suggestion}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              <div className="p-4 border-t border-slate-200 dark:border-slate-800/50 bg-white dark:bg-slate-900">
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Ask something about your inventory..."
-                    className="w-full pl-4 pr-12 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm font-medium text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all shadow-sm dark:shadow-none"
-                  />
-                  <button className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95">
-                    <Send size={16} className="-ml-0.5" />
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
 
     </div>
   )
