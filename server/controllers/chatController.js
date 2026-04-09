@@ -62,21 +62,25 @@ Answer the user's questions based on this inventory data. If they ask about some
         while (formattedHistory.length > 0 && formattedHistory[0].role === 'model') {
             formattedHistory.shift();
         }
-
-        const chat = model.startChat({
-            history: formattedHistory
-        });
-
         let aiResponse = "Sorry, I couldn't generate a response.";
 
         try {
-            const result = await chat.sendMessage(message);
+            const result = await model.generateContent({
+                contents: [
+                    ...formattedHistory,
+                    {
+                        role: "user",
+                        parts: [{ text: message }]
+                    }
+                ]
+            });
 
             if (result?.response?.text) {
                 aiResponse = result.response.text();
             }
         } catch (geminiError) {
             console.error("Gemini FULL ERROR:", geminiError);
+            aiResponse = "Sorry, AI service is currently unavailable.";
         }
 
         res.json({
