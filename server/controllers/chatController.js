@@ -4,6 +4,9 @@ const handleChat = async (req, res) => {
     const { Product, Sale, Bill, AuditLog } = req.tenantDb || {};
     try {
         const { message, history } = req.body;
+        console.log("Incoming message:", message);
+        console.log("History:", history);
+        console.log("API KEY exists:", !!process.env.GEMINI_API_KEY);
 
         if (!message) {
             return res.status(400).json({ success: false, message: 'Message is required' });
@@ -28,6 +31,8 @@ const handleChat = async (req, res) => {
 
         const products = await Product.find({ isDeleted: false })
             .select('name category price stock');
+
+        console.log("Products count:", products.length);
 
         const inventoryContext = (products || [])
             .map(p => `- ${p.name} (${p.category || 'N/A'}): $${p.price}, Stock: ${p.stock}`)
@@ -71,8 +76,7 @@ Answer the user's questions based on this inventory data. If they ask about some
                 aiResponse = result.response.text();
             }
         } catch (geminiError) {
-            console.error("Gemini API Error:", geminiError.message);
-            aiResponse = "Sorry, AI service is currently unavailable.";
+            console.error("Gemini FULL ERROR:", geminiError);
         }
 
         res.json({
