@@ -1,11 +1,16 @@
-
 // @desc    Get dashboard stats (total products, low stock count, today's sales, monthly revenue)
 // @route   GET /api/dashboard/stats
 // @access  Private (admin)
 // SAFETY: Read-only — uses only countDocuments() and aggregate(), no writes/updates/deletes
 const getDashboardStats = async (req, res) => {
-    const { Product, Sale, Bill, AuditLog } = req.tenantDb || {};
     try {
+        const { Product, Sale, Bill, AuditLog } = req.tenantDb || {};
+
+        // ✅ Guard against missing models
+        if (!Product || !Sale) {
+            return res.status(500).json({ message: 'Tenant DB models not initialized' });
+        }
+
         // Today's date boundaries (UTC)
         const todayStart = new Date();
         todayStart.setHours(0, 0, 0, 0);
@@ -68,6 +73,7 @@ const getDashboardStats = async (req, res) => {
             monthlyRevenue: monthlyRevenueAgg[0]?.total || 0,
             monthlySalesCount: monthlyRevenueAgg[0]?.count || 0
         });
+
     } catch (error) {
         console.error('Error fetching dashboard stats:', error.message);
         res.status(500).json({ message: 'Server error' });
