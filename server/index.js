@@ -6,20 +6,24 @@ const { protect } = require('./middleware/authMiddleware');
 
 const app = express();
 
-// ✅ 1. CORS — always first
+// ✅ 1. CORS — absolute first, before everything
 app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
-    if (req.method === "OPTIONS") return res.sendStatus(200);
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
+
+    if (req.method === "OPTIONS") {
+        return res.status(200).end();
+    }
+
     next();
 });
 
-// ✅ 2. Body parsers — synchronously, right after CORS
+// ✅ 2. Body parsers
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ 3. All routes — synchronously registered
+// ✅ 3. Routes — all registered synchronously
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
@@ -31,23 +35,26 @@ app.use('/api/audit-logs', require('./routes/auditLogRoutes'));
 app.use('/api/chat', protect, tenantMiddleware, require('./routes/chatRoutes'));
 
 // ✅ 4. Health check
-app.get('/', (req, res) => res.send('Smart Inventory API is running...'));
+app.get('/', (req, res) => {
+    res.send('Smart Inventory API is running...');
+});
 
-// ✅ 5. Error handler — always last
+// ✅ 5. Global error handler — always last
 app.use((err, req, res, next) => {
     console.error("Server Error:", err.message);
     res.status(500).json({ message: "Server error" });
 });
 
-// ✅ 6. Connect DB then start listening
+// ✅ 6. Connect DB then start server
 const startServer = async () => {
     try {
-        await connectDB();  // only DB connection is async now
+        await connectDB();
 
         const PORT = process.env.PORT || 5000;
         app.listen(PORT, '0.0.0.0', () => {
             console.log(`Server running on port ${PORT}`);
         });
+
     } catch (error) {
         console.error('Startup Error:', error);
         process.exit(1);
