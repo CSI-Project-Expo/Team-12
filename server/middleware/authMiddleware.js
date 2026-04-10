@@ -2,28 +2,17 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 const protect = async (req, res, next) => {
-
-    // 🔥 ALLOW CORS PREFLIGHT
-    if (req.method === "OPTIONS") {
-        return next();
-    }
+    if (req.method === "OPTIONS") return next(); // ✅ already there
 
     let token;
 
-    if (
-        req.headers.authorization &&
-        req.headers.authorization.startsWith('Bearer')
-    ) {
+    if (req.headers.authorization?.startsWith('Bearer')) {
         try {
             token = req.headers.authorization.split(' ')[1];
-
             const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret123');
-
             req.user = await User.findById(decoded.id).select('-password');
 
-            if (!req.user) {
-                return res.status(401).json({ message: 'User not found' });
-            }
+            if (!req.user) return res.status(401).json({ message: 'User not found' });
 
             return next();
         } catch (error) {
@@ -36,6 +25,8 @@ const protect = async (req, res, next) => {
 };
 
 const admin = (req, res, next) => {
+    if (req.method === "OPTIONS") return next(); // ✅ THIS was missing
+
     if (req.user && req.user.role === 'admin') {
         next();
     } else {
