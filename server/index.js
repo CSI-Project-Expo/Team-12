@@ -1,44 +1,37 @@
 require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
 const connectDB = require('./config/db');
 const tenantMiddleware = require('./middleware/tenantMiddleware');
 const { protect } = require('./middleware/authMiddleware');
 
 const app = express();
 
-// ✅ Allowed origins
-const allowedOrigins = [
-    "http://localhost:5173",
-    "https://stock-smart-blond.vercel.app",
-    "https://stocksmart-seven.vercel.app"
-];
+// 🔥 GLOBAL CORS FIX (works for everything)
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    );
+    res.header(
+        "Access-Control-Allow-Methods",
+        "GET, POST, PUT, DELETE, OPTIONS"
+    );
+
+    if (req.method === "OPTIONS") {
+        return res.sendStatus(200);
+    }
+
+    next();
+});
 
 const startServer = async () => {
     try {
         await connectDB();
 
-        // ✅ CLEAN CORS (no crashes, handles preflight automatically)
-        app.use(cors({
-            origin: function (origin, callback) {
-                if (!origin) return callback(null, true); // allow Postman / mobile apps
-
-                if (allowedOrigins.includes(origin)) {
-                    return callback(null, true);
-                } else {
-                    return callback(null, false); // ❗ do NOT throw error
-                }
-            },
-            methods: ["GET", "POST", "PUT", "DELETE"],
-            credentials: true
-        }));
-
-        // ❌ REMOVED (this was crashing your server)
-        // app.options('*', cors());
-
-        // ✅ Body parsers
+        // ✅ Body parser
         app.use(express.json({ limit: '50mb' }));
-        app.use(express.urlencoded({ limit: '50mb', extended: true }));
+        app.use(express.urlencoded({ extended: true }));
 
         // ✅ Routes
         app.use('/api/auth', require('./routes/authRoutes'));
@@ -50,7 +43,7 @@ const startServer = async () => {
         app.use('/api/reports', require('./routes/reportsRoutes'));
         app.use('/api/audit-logs', require('./routes/auditLogRoutes'));
 
-        // ✅ Chat route (protected + tenant aware)
+        // 🔥 Chat route (protected)
         app.use('/api/chat', protect, tenantMiddleware, require('./routes/chatRoutes'));
 
         // ✅ Health check
@@ -58,12 +51,10 @@ const startServer = async () => {
             res.send('Smart Inventory API is running...');
         });
 
-        // ✅ Global error handler
+        // ✅ Error handler
         app.use((err, req, res, next) => {
-            console.error('Unhandled Error:', err.stack || err.message);
-            res.status(500).json({
-                message: err.message || 'Internal Server Error'
-            });
+            console.error("Server Error:", err.message);
+            res.status(500).json({ message: "Server error" });
         });
 
         const PORT = process.env.PORT || 5000;
@@ -73,14 +64,13 @@ const startServer = async () => {
         });
 
     } catch (error) {
-        console.error('Failed to start server:', error);
+        console.error('Startup Error:', error);
         process.exit(1);
     }
 };
 
-// ✅ Catch unhandled promises
 process.on('unhandledRejection', (err) => {
-    console.error('Unhandled Promise Rejection:', err.message || err);
+    console.error('Unhandled Rejection:', err);
 });
 
 startServer();

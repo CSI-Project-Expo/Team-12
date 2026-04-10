@@ -3,7 +3,7 @@ const User = require('../models/User');
 
 const protect = async (req, res, next) => {
 
-    // 🔥 FIX: allow CORS preflight requests
+    // 🔥 ALLOW CORS PREFLIGHT
     if (req.method === "OPTIONS") {
         return next();
     }
@@ -15,35 +15,31 @@ const protect = async (req, res, next) => {
         req.headers.authorization.startsWith('Bearer')
     ) {
         try {
-            // Get token from header
             token = req.headers.authorization.split(' ')[1];
 
-            // Verify token
             const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret123');
 
-            // Get user from the token
             req.user = await User.findById(decoded.id).select('-password');
 
             if (!req.user) {
-                return res.status(401).json({ message: 'Not authorized, user not found' });
+                return res.status(401).json({ message: 'User not found' });
             }
 
             return next();
         } catch (error) {
             console.error('Auth Error:', error.message);
-            return res.status(401).json({ message: 'Not authorized' });
+            return res.status(401).json({ message: 'Invalid token' });
         }
     }
 
-    // No token provided at all
-    return res.status(401).json({ message: 'Not authorized, no token' });
+    return res.status(401).json({ message: 'No token provided' });
 };
 
 const admin = (req, res, next) => {
     if (req.user && req.user.role === 'admin') {
         next();
     } else {
-        res.status(401).json({ message: 'Not authorized as an admin' });
+        res.status(401).json({ message: 'Admin only' });
     }
 };
 
