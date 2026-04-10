@@ -15,14 +15,11 @@ app.use(cors({
     optionsSuccessStatus: 200
 }));
 
-// ✅ 2. Handle preflight for all routes
-app.options('*', cors());
-
-// ✅ 3. Body parsers
+// ✅ 2. Body parsers
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ 4. Routes
+// ✅ 3. Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
@@ -33,18 +30,18 @@ app.use('/api/reports', require('./routes/reportsRoutes'));
 app.use('/api/audit-logs', require('./routes/auditLogRoutes'));
 app.use('/api/chat', protect, tenantMiddleware, require('./routes/chatRoutes'));
 
-// ✅ 5. Health check
+// ✅ 4. Health check
 app.get('/', (req, res) => {
     res.send('Smart Inventory API is running...');
 });
 
-// ✅ 6. Global error handler
+// ✅ 5. Global error handler
 app.use((err, req, res, next) => {
     console.error("Server Error:", err.message);
     res.status(500).json({ message: "Server error" });
 });
 
-// ✅ 7. Connect DB then start
+// ✅ 6. Connect DB then start
 const startServer = async () => {
     try {
         await connectDB();
