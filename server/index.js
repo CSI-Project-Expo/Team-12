@@ -18,12 +18,15 @@ const startServer = async () => {
     try {
         await connectDB();
 
-        // ✅ CLEAN CORS (no conflicts)
+        // ✅ CORS (clean + correct)
         app.use(cors({
             origin: allowedOrigins,
-            methods: ["GET", "POST", "PUT", "DELETE"],
+            methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             credentials: true
         }));
+
+        // ✅ 🔥 VERY IMPORTANT: handle preflight requests
+        app.options('*', cors());
 
         // ✅ Body parsers
         app.use(express.json({ limit: '50mb' }));
