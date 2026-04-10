@@ -1,27 +1,23 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const Groq = require('groq-sdk');
 
 const handleChat = async (req, res) => {
-    const { Product, Sale, Bill, AuditLog } = req.tenantDb || {};
+    const { Product } = req.tenantDb || {};
     try {
         const { message, history } = req.body;
         console.log("Incoming message:", message);
-        console.log("History:", history);
-        console.log("API KEY exists:", !!process.env.GEMINI_API_KEY);
+        console.log("API KEY exists:", !!process.env.GROQ_API_KEY);
 
         if (!message) {
             return res.status(400).json({ success: false, message: 'Message is required' });
         }
 
-        if (!process.env.GEMINI_API_KEY) {
+        if (!process.env.GROQ_API_KEY) {
             return res.json({
                 success: true,
-                reply: "Hello! I am Antigravity. Please add your GEMINI_API_KEY to the backend `.env` file to fully activate my capabilities."
+                reply: "Hello! I am Antigravity. Please add your GROQ_API_KEY to the backend .env file to fully activate my capabilities."
             });
         }
 
-        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-        // Fetch context: Products (Inventory)
         if (!Product) {
             return res.status(500).json({
                 success: false,
@@ -46,51 +42,50 @@ Here is the current real-time inventory data context:
 ${inventoryContext || 'No products available currently.'}
 
 Answer the user's questions based on this inventory data. If they ask about something not in the inventory, politely inform them.`;
-        const model = genAI.getGenerativeModel({
-            model: "gemini-2.0-flash",  // ✅ change this line
-            systemInstruction: systemPrompt
-        });
-        // Map the frontend history to the Gemini format
-        let formattedHistory = (history || []).map(msg => ({
-            role: msg.role === 'model' ? 'model' : 'user',
-            parts: [{ text: msg.text }]
-        }));
 
-        // Gemini requires the first message in history to be from the 'user'
-        while (formattedHistory.length > 0 && formattedHistory[0].role === 'model') {
-            formattedHistory.shift();
-        }
+        // Format history for Groq
+        const formattedHistory = (history || [])
+            .map(msg => ({
+                role: msg.role === 'model' ? 'assistant' : 'user',
+                content: msg.text
+            }));
+
+        const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
         let aiResponse = "Sorry, I couldn't generate a response.";
 
         try {
-            const result = await model.generateContent({
-                contents: [
+            const result = await groq.chat.completions.create({
+                model: "llama-3.3-70b-versatile",
+                messages: [
+                    { role: "system", content: systemPrompt },
                     ...formattedHistory,
-                    { role: "user", parts: [{ text: message }] }
-                ]
+                    { role: "user", content: message }
+                ],
+                max_tokens: 1000
             });
 
-            const text = result.response.text();
-            aiResponse = text || "No response from AI";
+            aiResponse = result.choices[0].message.content || "No response from AI";
 
-        } catch (geminiError) {
-            console.error("Gemini FULL ERROR:", geminiError);
-            aiResponse = "Sorry, AI service is currently unavailable.";
+        } catch (groqError) {
+            console.error("Groq ERROR:", groqError);
+            if (groqError.status === 429) {
+                aiResponse = "⏳ Too many requests. Please wait a moment and try again.";
+            } else {
+                aiResponse = "Sorry, AI service is currently unavailable.";
+            }
         }
 
-        res.json({
-            success: true,
-            reply: aiResponse
-        });
+        res.json({ success: true, reply: aiResponse });
 
     } catch (error) {
-        console.error('Chatbot error object:', error);
-        console.error('Chatbot error message:', error.message);
-        console.error('Chatbot error stack:', error.stack);
-        res.status(500).json({ success: false, message: 'Error processing chat request', errorDetail: error.message });
+        console.error('Chatbot error:', error.message);
+        res.status(500).json({
+            success: false,
+            message: 'Error processing chat request',
+            errorDetail: error.message
+        });
     }
 };
 
-module.exports = {
-    handleChat
-};
+module.exports = { handleChat };
