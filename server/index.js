@@ -18,15 +18,23 @@ const startServer = async () => {
     try {
         await connectDB();
 
-        // ✅ CORS (clean + correct)
+        // ✅ CLEAN CORS (no crashes, handles preflight automatically)
         app.use(cors({
-            origin: allowedOrigins,
-            methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            origin: function (origin, callback) {
+                if (!origin) return callback(null, true); // allow Postman / mobile apps
+
+                if (allowedOrigins.includes(origin)) {
+                    return callback(null, true);
+                } else {
+                    return callback(null, false); // ❗ do NOT throw error
+                }
+            },
+            methods: ["GET", "POST", "PUT", "DELETE"],
             credentials: true
         }));
 
-        // ✅ 🔥 VERY IMPORTANT: handle preflight requests
-        app.options('*', cors());
+        // ❌ REMOVED (this was crashing your server)
+        // app.options('*', cors());
 
         // ✅ Body parsers
         app.use(express.json({ limit: '50mb' }));
