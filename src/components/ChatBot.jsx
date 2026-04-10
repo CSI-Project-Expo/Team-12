@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const ChatBot = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([
-        { role: 'model', text: 'Hello! I am the Smart Inventory Assistant. How can I help you today?' }
+        { role: 'model', text: 'Hello! I am Antigravity, your Smart Inventory Assistant. How can I help you today?' }
     ]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -22,13 +22,18 @@ const ChatBot = () => {
         }
     }, [messages, isOpen]);
 
-    const handleSend = async (e) => {
+    const handleSend = async (e, retryText = null) => {
         e?.preventDefault();
-        if (!input.trim()) return;
+        const trimmed = retryText || input.trim();
+        if (!trimmed) return;
 
-        const userMessage = { role: 'user', text: input.trim() };
-        setMessages(prev => [...prev, userMessage]);
-        setInput('');
+        const userMessage = { role: 'user', text: trimmed };
+
+        if (!retryText) {
+            setMessages(prev => [...prev, userMessage]);
+            setInput('');
+        }
+
         setIsLoading(true);
 
         try {
@@ -42,11 +47,32 @@ const ChatBot = () => {
             if (response.data.success) {
                 setMessages(prev => [...prev, { role: 'model', text: response.data.reply }]);
             } else {
-                setMessages(prev => [...prev, { role: 'model', text: 'Sorry, I encountered an error.' }]);
+                setMessages(prev => [...prev, { role: 'model', text: 'Sorry, I encountered an error. Please try again.' }]);
             }
+
         } catch (error) {
             console.error('Chat error:', error);
-            setMessages(prev => [...prev, { role: 'model', text: 'Sorry, I am having trouble connecting to the server. Please ensure the backend is running and GEMINI_API_KEY is set.' }]);
+
+            if (error.code === 'ERR_NETWORK') {
+                // Cold start — server waking up
+                setMessages(prev => [...prev, {
+                    role: 'model',
+                    text: '⏳ Server is waking up, please wait 30 seconds...'
+                }]);
+
+                setTimeout(() => {
+                    // Remove the waking up message
+                    setMessages(prev => prev.filter(m => !m.text.includes('waking up')));
+                    // Auto retry
+                    handleSend(null, trimmed);
+                }, 30000);
+
+            } else {
+                setMessages(prev => [...prev, {
+                    role: 'model',
+                    text: 'Sorry, I encountered an error. Please try again.'
+                }]);
+            }
         } finally {
             setIsLoading(false);
         }
