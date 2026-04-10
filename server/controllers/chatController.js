@@ -46,12 +46,10 @@ Here is the current real-time inventory data context:
 ${inventoryContext || 'No products available currently.'}
 
 Answer the user's questions based on this inventory data. If they ask about something not in the inventory, politely inform them.`;
-
         const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash",
+            model: "gemini-1.5-flash-latest",
             systemInstruction: systemPrompt
         });
-
         // Map the frontend history to the Gemini format
         let formattedHistory = (history || []).map(msg => ({
             role: msg.role === 'model' ? 'model' : 'user',
@@ -65,7 +63,12 @@ Answer the user's questions based on this inventory data. If they ask about some
         let aiResponse = "Sorry, I couldn't generate a response.";
 
         try {
-            const result = await model.generateContent(message);
+            const result = await model.generateContent({
+                contents: [
+                    ...formattedHistory,
+                    { role: "user", parts: [{ text: message }] }
+                ]
+            });
 
             const text = result.response.text();
             aiResponse = text || "No response from AI";
