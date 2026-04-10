@@ -46,6 +46,7 @@ app.use('/api/chat', protect, tenantMiddleware, require('./routes/chatRoutes'));
 
 // ✅ 6. Health check
 app.get('/', (req, res) => res.send('Smart Inventory API is running...'));
+app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 // ✅ 7. Global error handler
 app.use((err, req, res, next) => {
