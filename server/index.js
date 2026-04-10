@@ -7,7 +7,7 @@ const { protect } = require('./middleware/authMiddleware');
 
 const app = express();
 
-// ✅ Allowed origins (single source of truth)
+// ✅ Allowed origins
 const allowedOrigins = [
     "http://localhost:5173",
     "https://stock-smart-blond.vercel.app",
@@ -18,37 +18,14 @@ const startServer = async () => {
     try {
         await connectDB();
 
-        // ✅ CORS
+        // ✅ CLEAN CORS (no conflicts)
         app.use(cors({
-            origin: function (origin, callback) {
-                if (!origin) return callback(null, true); // allow non-browser clients
-                if (allowedOrigins.includes(origin)) {
-                    return callback(null, true);
-                }
-                return callback(new Error("Not allowed by CORS"));
-            },
-            methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            allowedHeaders: ["Content-Type", "Authorization"],
+            origin: allowedOrigins,
+            methods: ["GET", "POST", "PUT", "DELETE"],
             credentials: true
         }));
 
-        // ✅ Handle preflight
-        app.use((req, res, next) => {
-            const origin = req.headers.origin;
-
-            if (origin && allowedOrigins.includes(origin)) {
-                res.header("Access-Control-Allow-Origin", origin);
-            }
-
-            res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-            res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-
-            if (req.method === "OPTIONS") {
-                return res.sendStatus(200);
-            }
-
-            next();
-        });
+        // ✅ Body parsers
         app.use(express.json({ limit: '50mb' }));
         app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
@@ -62,14 +39,15 @@ const startServer = async () => {
         app.use('/api/reports', require('./routes/reportsRoutes'));
         app.use('/api/audit-logs', require('./routes/auditLogRoutes'));
 
-        // 🔥 FIXED CHAT ROUTE (IMPORTANT)
+        // ✅ Chat route (protected + tenant aware)
         app.use('/api/chat', protect, tenantMiddleware, require('./routes/chatRoutes'));
 
+        // ✅ Health check
         app.get('/', (req, res) => {
             res.send('Smart Inventory API is running...');
         });
 
-        // Global error handler
+        // ✅ Global error handler
         app.use((err, req, res, next) => {
             console.error('Unhandled Error:', err.stack || err.message);
             res.status(500).json({
@@ -89,6 +67,7 @@ const startServer = async () => {
     }
 };
 
+// ✅ Catch unhandled promises
 process.on('unhandledRejection', (err) => {
     console.error('Unhandled Promise Rejection:', err.message || err);
 });
