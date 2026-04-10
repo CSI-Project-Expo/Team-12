@@ -47,7 +47,7 @@ ${inventoryContext || 'No products available currently.'}
 
 Answer the user's questions based on this inventory data. If they ask about something not in the inventory, politely inform them.`;
         const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash-latest",
+            model: "gemini-1.0-pro",
             systemInstruction: systemPrompt
         });
         // Map the frontend history to the Gemini format
