@@ -1,29 +1,28 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const connectDB = require('./config/db');
 const tenantMiddleware = require('./middleware/tenantMiddleware');
 const { protect } = require('./middleware/authMiddleware');
 
 const app = express();
 
-// ✅ 1. CORS — absolute first, before everything
-app.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
+// ✅ 1. CORS — first, before everything
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
+    optionsSuccessStatus: 200
+}));
 
-    if (req.method === "OPTIONS") {
-        return res.status(200).end();
-    }
+// ✅ 2. Handle preflight for all routes
+app.options('*', cors());
 
-    next();
-});
-
-// ✅ 2. Body parsers
+// ✅ 3. Body parsers
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ 3. Routes — all registered synchronously
+// ✅ 4. Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
@@ -34,18 +33,18 @@ app.use('/api/reports', require('./routes/reportsRoutes'));
 app.use('/api/audit-logs', require('./routes/auditLogRoutes'));
 app.use('/api/chat', protect, tenantMiddleware, require('./routes/chatRoutes'));
 
-// ✅ 4. Health check
+// ✅ 5. Health check
 app.get('/', (req, res) => {
     res.send('Smart Inventory API is running...');
 });
 
-// ✅ 5. Global error handler — always last
+// ✅ 6. Global error handler
 app.use((err, req, res, next) => {
     console.error("Server Error:", err.message);
     res.status(500).json({ message: "Server error" });
 });
 
-// ✅ 6. Connect DB then start server
+// ✅ 7. Connect DB then start
 const startServer = async () => {
     try {
         await connectDB();
